@@ -1,427 +1,2970 @@
-<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#087f5b"><title>Lịch Chấm Công • Responsive Pro</title>
-<style>
-:root{--g:#087f5b;--g2:#e6f5ed;--bg:#f3f7f5;--ink:#17332a;--mut:#60766d;--line:#d8e5de;--white:#fff;--red:#b42318;--orange:#985b00}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
-header{background:linear-gradient(115deg,#075b43,#0a9369);color:white;padding:16px max(14px,calc((100% - 1220px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}h1{margin:0;font-size:21px}header small{opacity:.85}main{max-width:1220px;margin:16px auto;padding:0 12px}
-button{border:0;border-radius:9px;padding:9px 12px;background:var(--g);color:white;font-weight:700;cursor:pointer}button.secondary{background:#edf4f0;color:#285746;border:1px solid var(--line)}button.red{background:#fff0ee;color:var(--red);border:1px solid #f0c8c3}
-.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}.tabs button{background:#e2ece7;color:#31584a}.tabs button.active{background:var(--g);color:white}
-.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px;box-shadow:0 3px 12px #163d2b08}.flex{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.row{display:flex;gap:9px;flex-wrap:wrap}.row>*{flex:1;min-width:125px}.month{font-size:20px;font-weight:850}.muted{font-size:12px;color:var(--mut)}.title{font-size:16px;font-weight:850;margin:0 0 10px}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}.stat{padding:9px;border:1px solid var(--line);background:#f7fbf9;border-radius:10px}.stat b{display:block;font-size:18px;margin-top:3px}
-.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.weekday{text-align:center;color:var(--mut);font-size:12px;font-weight:800;padding:5px 0}.day{min-width:0;min-height:120px;padding:7px;border:1px solid var(--line);border-radius:10px;background:#fff;text-align:left;color:var(--ink);display:flex;flex-direction:column;gap:3px;overflow:hidden}.day.selected{outline:2px solid var(--g);border-color:var(--g)}.day.today .num{color:var(--g)}.day.blank{border:0;background:transparent;min-height:0}.num{font-weight:900;font-size:15px}.pill{font-size:10px;font-weight:850;align-self:flex-start;border-radius:5px;padding:2px 5px;background:var(--g2);color:#176448}.day.rest .pill{background:#fff0d6;color:#8a5000}.day.ph .pill{background:#ffebe9;color:#a32c24}.day .line{font-size:10px;line-height:1.25;color:#50675d;overflow-wrap:anywhere}.day .hours{font-size:10px;font-weight:800;margin-top:auto;color:#1b6c4d}
-.detailgrid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:4px;margin:7px 0}.field label{font-size:12px;font-weight:800;color:#52685f}.field input,.field select,.field textarea{width:100%;padding:9px;border:1px solid #cbd9d2;border-radius:8px;background:white;color:var(--ink);font:inherit}.field textarea{min-height:60px}.settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.setting{border:1px solid var(--line);border-radius:9px;padding:8px}.setting label{display:block;font-size:11px;color:var(--mut);margin-bottom:4px}.setting input{width:100%;padding:7px;border:1px solid #cbd9d2;border-radius:7px}.setting.check{display:flex;gap:7px;align-items:center}.setting.check input{width:auto}.setting.check label{margin:0;color:var(--ink)}
-table{border-collapse:collapse;width:100%}td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left}td:last-child{text-align:right;font-variant-numeric:tabular-nums}.total{font-weight:850;background:#f1faf5}.section{font-weight:850;margin:18px 0 8px}.notice{padding:10px;background:#fff8e5;border:1px solid #eedeb5;border-radius:9px;color:#785500;margin:9px 0}.hide{display:none!important}
-@media(max-width:760px){main{margin:9px auto}.stats{grid-template-columns:repeat(2,1fr)}.detailgrid{grid-template-columns:1fr}.settings{grid-template-columns:repeat(2,minmax(0,1fr))}.calendar{gap:3px}.day{min-height:86px;padding:4px;border-radius:7px}.day .line{font-size:9px}.day .hours{font-size:9px}.weekday{font-size:10px}}
+<!doctype html>
+<html lang="vi">
 
-/* Compact, app-like interaction */
-.tabs{position:sticky;top:0;z-index:20;background:var(--bg);padding:7px 0;margin:0 0 10px;gap:6px}
-.tabs button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:8px 13px;border-radius:12px}
-.tabs button .tabicon{font-size:19px;line-height:1}
-.tabs button .tablabel{font-size:13px}
-.day{cursor:pointer;transition:transform .12s,box-shadow .12s}.day:active{transform:scale(.97)}
-.day .num{font-size:16px}.day .pill{font-size:10px}
-#dayModal{position:fixed;inset:0;z-index:1000;background:#10251dcc;display:none;align-items:flex-end;justify-content:center;padding:0}
-#dayModal.open{display:flex}
-#dayModal .panel{width:min(850px,100%);max-height:92vh;overflow:auto;margin:0;border-radius:22px 22px 0 0;padding:16px;box-shadow:0 -10px 40px #0002}
-#dayModal .modalbar{position:sticky;top:-16px;background:#fff;z-index:5;padding:4px 0 10px;border-bottom:1px solid var(--line);margin-bottom:10px}
-#dayModal .detailgrid{grid-template-columns:1fr 230px;gap:12px}
-#dayModal .notice{font-size:12px}
-.settings{transition:all .18s}.section.setting-toggle{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0 6px;background:#f8fbf9;cursor:pointer;font-size:14px}
-.section.setting-toggle:before{content:attr(data-icon);display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:#e2f3e9;font-size:19px}
-.section.setting-toggle:after{content:'⌄';margin-left:auto;color:var(--mut);font-size:20px}
-.section.setting-toggle.collapsed:after{content:'›'}
-.settings.collapsed{display:none}
-#settingsTab .panel>h2{display:flex;align-items:center;gap:8px}#settingsTab .panel>h2:before{content:'⚙️';font-size:22px}
-#saveDay{width:100%;min-height:48px;font-size:15px}
-@media(max-width:600px){
- main{padding:0 8px}.tabs{justify-content:space-around}.tabs button{flex:1;padding:7px 4px;min-width:0}.tabs button .tablabel{display:none}.tabs button .tabicon{font-size:22px}
- #dayModal{align-items:flex-end}#dayModal .panel{max-height:94vh;padding:13px;border-radius:20px 20px 0 0}
- #dayModal .detailgrid{grid-template-columns:1fr}
- #dayModal .detailgrid>div:last-child{display:grid;grid-template-columns:1fr 1fr;gap:8px}
- #dayModal .detailgrid>div:last-child .notice{grid-column:1/-1;margin:0}
- #dayModal .detailgrid>div:last-child .field{margin:0}
- #dayModal .detailgrid>div:last-child #saveDay{grid-column:1/-1}
- .day{min-height:78px;padding:4px 3px}.day .line{font-size:8px}.day .hours{font-size:8px}.day .pill{font-size:9px;padding:2px 3px}
-}
-@media(min-width:601px){#dayModal{align-items:center;padding:18px}#dayModal .panel{border-radius:18px;max-height:90vh}}
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta name="theme-color" content="#087f5b">
+	<title>Lịch Chấm Công • Responsive Pro</title>
+	<style>
+		:root {
+			--g: #087f5b;
+			--g2: #e6f5ed;
+			--bg: #f3f7f5;
+			--ink: #17332a;
+			--mut: #60766d;
+			--line: #d8e5de;
+			--white: #fff;
+			--red: #b42318;
+			--orange: #985b00
+		}
 
-/* ===== Responsive Pro UI refresh ===== */
-:root{
- --g:#087f5b;--g2:#e7f6ee;--bg:#f4f7f6;--ink:#18352b;--mut:#71837b;
- --line:#dce7e2;--white:#fff;--red:#b42318;--orange:#9a6200;
- --shadow:0 10px 30px rgba(20,54,39,.07);
-}
-html{width:100%;overflow-x:clip;scroll-behavior:smooth}
-body{width:100%;min-width:0;overflow-x:clip;background:linear-gradient(180deg,#f3f8f5 0%,#f5f7f6 36%,#f3f6f5 100%);-webkit-tap-highlight-color:transparent}
-*,*::before,*::after{box-sizing:border-box}
-header{width:100%;max-width:100%;padding:clamp(14px,3vw,28px) max(16px,calc((100% - 1160px)/2));gap:14px}
-header h1{font-size:clamp(20px,3vw,30px);letter-spacing:-.035em}
-header small{display:block;font-size:clamp(11px,1.4vw,14px);margin-top:4px}
-header .row{gap:8px;flex:0 1 auto!important}
-header button{min-height:40px;padding:9px 13px;font-size:13px;border-radius:12px;white-space:nowrap}
-main{width:100%;max-width:1160px;min-width:0;margin:22px auto;padding:0 clamp(12px,2.5vw,26px) 30px}
-.panel{min-width:0;border:1px solid rgba(214,229,221,.9);border-radius:clamp(16px,2vw,24px);padding:clamp(14px,2.2vw,24px);box-shadow:var(--shadow);margin-bottom:16px}
-.tabs{display:flex;align-items:center;gap:8px;width:100%;min-width:0;padding:8px;margin:0 0 16px;border:1px solid #e1ebe5;border-radius:18px;background:rgba(255,255,255,.84);box-shadow:0 6px 20px #153d2b0b;backdrop-filter:blur(16px)}
-.tabs button{flex:1 1 0;min-width:0;min-height:48px;padding:8px 10px;gap:8px;border-radius:13px;font-size:13px;transition:background .2s,color .2s,transform .2s,box-shadow .2s}
-.tabs button .tabicon{font-size:20px}
-.tabs button.active{box-shadow:0 5px 14px #087f5b25}
-.tabs button:active{transform:scale(.97)}
-#calendarTab>.panel:first-child{animation:riseIn .35s cubic-bezier(.2,.7,.2,1) both}
-.month{font-size:clamp(20px,3vw,28px);letter-spacing:-.04em;line-height:1.2;text-transform:capitalize}
-#calendarTab .panel:first-child .muted{font-size:13px;line-height:1.55;margin-top:7px;max-width:580px}
-#calendarTab .panel:first-child>.flex{align-items:center}
-#calendarTab .panel:first-child>.flex>.row{flex:0 0 auto!important;min-width:0;gap:6px}
-#calendarTab .panel:first-child>.flex>.row button{min-width:0!important;flex:0 0 auto!important;padding:10px 14px;min-height:42px;border-radius:12px}
-#thisMonth{white-space:nowrap}
-.stats{gap:10px;margin:18px 0}
-.stat{min-width:0;border:1px solid #e0ebe5;border-radius:15px;padding:13px 15px;background:linear-gradient(145deg,#fbfdfc,#f5faf7)}
-.stat span{font-size:12px;line-height:1.4}
-.stat b{font-size:clamp(18px,2.4vw,25px);letter-spacing:-.03em;overflow-wrap:anywhere}
-.calendar{width:100%;min-width:0;gap:6px}
-.weekday{font-size:12px;padding:8px 0;color:#73857c}
-.day{width:100%;min-width:0;min-height:112px;padding:9px;border-radius:14px;gap:5px;box-shadow:0 1px 0 #143d2b05;transition:transform .18s cubic-bezier(.2,.8,.2,1),border-color .18s,box-shadow .18s,background .18s}
-.day:hover{transform:translateY(-2px);border-color:#a9cdbb;box-shadow:0 7px 16px #153d2b12}
-.day.selected{outline:none;border:2px solid var(--g);box-shadow:0 0 0 4px #087f5b12}
-.day .num{font-size:17px;line-height:1.2}
-.day .pill{font-size:10px;padding:3px 6px;border-radius:7px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.day .line{font-size:10px;line-height:1.3;color:#64776d}
-.day .hours{font-size:10px;line-height:1.3;margin-top:auto;white-space:normal}
-.day.blank{min-height:0;padding:0}
-button,input,select,textarea{font:inherit}
-button{touch-action:manipulation;transition:filter .15s,transform .15s}
-button:active{filter:brightness(.97)}
-.row{min-width:0;gap:9px}
-.row>*{min-width:0}
-.field{min-width:0}
-.field input,.field select,.field textarea{min-width:0;min-height:44px;border-radius:11px;border-color:#d5e2db;background:#fbfdfc}
-.field input:focus,.field select:focus,.field textarea:focus{outline:3px solid #087f5b1b;border-color:#62a98b}
-.detailgrid{min-width:0}
-#dayModal{backdrop-filter:blur(5px);animation:fadeIn .18s ease both}
-#dayModal .panel{padding:clamp(14px,3vw,24px);border:0;border-radius:24px 24px 0 0;max-height:min(92dvh,900px);overscroll-behavior:contain;animation:sheetIn .28s cubic-bezier(.2,.75,.2,1) both}
-#dayModal .modalbar{top:-16px;padding:8px 0 12px;gap:10px}
-#dayModal .detailgrid{grid-template-columns:minmax(0,1fr) 220px}
-#dayModal .modalbar .row{flex:0 0 auto!important;min-width:0}
-#dayModal .modalbar button{min-width:40px!important;min-height:40px;padding:8px}
-#dayModal #saveDay{position:sticky;bottom:0;width:100%;min-height:48px;border-radius:14px;box-shadow:0 -8px 20px #ffffffd9}
-#dayModal .notice{font-size:12px;line-height:1.5}
-#payResult{overflow-x:auto}
-#payResult table{min-width:0}
-#payResult td{font-size:13px}
-#settingsTab .panel>h2{font-size:20px;letter-spacing:-.03em}
-.setting{min-width:0;border-radius:12px;background:#fbfdfc}
-.setting input{min-width:0;max-width:100%;border-radius:9px}
-.section.setting-toggle{transition:background .18s,transform .18s,border-color .18s}
-.section.setting-toggle:active{transform:scale(.99)}
-.settings{min-width:0}
-#monthinputsTab .panel{min-width:0}
-#items .row{align-items:flex-end}
-.calendar-enter{animation:riseIn .24s cubic-bezier(.2,.7,.2,1) both}@keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes sheetIn{from{opacity:.7;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:760px){
- main{margin:10px auto;padding:0 12px 92px}
- header{padding:15px 14px;align-items:flex-start}
- header>div:first-child{min-width:0;flex:1 1 100%}
- header h1{font-size:22px}
- header .row{width:100%;display:grid;grid-template-columns:1fr 1fr}
- header button{width:100%;min-width:0!important}
- .tabs{position:fixed;top:auto;bottom:0;left:0;right:0;z-index:100;padding:8px max(12px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));margin:0;border-radius:18px 18px 0 0;border:1px solid #dce8e1;border-bottom:0;background:rgba(255,255,255,.94);box-shadow:0 -8px 30px #143d2b12;backdrop-filter:blur(20px)}
- .tabs button{flex:1 1 0;display:flex;flex-direction:column;gap:3px;min-height:56px;padding:5px 2px;border-radius:12px}
- .tabs button .tabicon{font-size:21px}
- .tabs button .tablabel{font-size:10px;line-height:1.2;white-space:nowrap}
- .panel{padding:15px;border-radius:19px;margin-bottom:12px}
- #calendarTab>.panel:first-child .flex{align-items:flex-start}
- #calendarTab .panel:first-child>.flex>.row{width:100%;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:7px;margin-top:12px}
- #calendarTab .panel:first-child>.flex>.row button{width:100%;min-width:0!important;padding:8px 4px;min-height:42px}
- .month{font-size:23px}
- .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}
- .stat{padding:11px;border-radius:13px}
- .stat b{font-size:20px}
- .calendar{gap:4px}
- .weekday{font-size:11px;padding:5px 0}
- .day{min-height:72px;padding:6px 5px;border-radius:10px;gap:4px}
- .day .num{font-size:15px}
- .day .pill{font-size:9px;padding:2px 4px;border-radius:6px}
- .day .line{font-size:9px;line-height:1.2}
- .day .hours{font-size:9px;line-height:1.2}
- .detailgrid{grid-template-columns:minmax(0,1fr)}
- #dayModal .detailgrid{grid-template-columns:minmax(0,1fr);gap:8px}
- #dayModal .detailgrid>div:last-child{padding-top:4px}
- #dayModal .panel{width:100%;max-height:94dvh;padding:14px 14px calc(16px + env(safe-area-inset-bottom))}
- #dayModal .modalbar{top:-14px}
- #dayModal .modalbar .title{font-size:17px}
- #dayModal .row{gap:7px}
- #dayModal .row>*{flex:1 1 calc(50% - 7px);min-width:0}
- #dayModal .field{margin:5px 0}
- #dayModal .field label{font-size:11px}
- #dayModal .field input,#dayModal .field select{min-height:43px;padding:8px}
- #dayModal #saveDay{bottom:-1px;margin-top:8px}
- .settings{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
- .setting{padding:8px}
- .setting label{font-size:10px;overflow-wrap:anywhere}
- .setting input{padding:7px;font-size:13px}
- #payResult table{width:100%;table-layout:fixed}
- #payResult td{padding:9px 6px;font-size:12px;overflow-wrap:anywhere}
- #payResult td:first-child{width:62%}
-}
-@media(max-width:420px){
- main{padding-left:9px;padding-right:9px}
- header{padding:13px 12px}
- header h1{font-size:20px}
- .tabs{gap:4px;padding-left:8px;padding-right:8px}
- .tabs button .tablabel{font-size:9px}
- #calendarTab>.panel:first-child{padding:12px}
- #calendarTab .panel:first-child .muted{font-size:12px}
- .month{font-size:21px}
- .stats{gap:7px}
- .stat{padding:9px 10px}
- .stat span{font-size:11px}
- .stat b{font-size:18px}
- .calendar{gap:3px}
- .day{min-height:60px;padding:5px 3px;border-radius:8px;align-items:center}
- .day .num{align-self:flex-start;font-size:14px}
- .day .pill{font-size:0;width:7px;height:7px;padding:0;border-radius:50%;align-self:center}
- .day.work .pill{background:#079568}
- .day.off .pill{background:#e2a13b}
- .day.unset .pill{background:#b8c5be}
- .day.ph .pill{background:#d34b42}
- .day .line{display:none}
- .day .hours{font-size:8px;white-space:nowrap;overflow:hidden;max-width:100%;text-overflow:ellipsis;margin-top:0}
- .day.blank{min-height:0}
- #dayModal .panel{border-radius:20px 20px 0 0}
-}
-@media(prefers-reduced-motion:reduce){
- *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
-}
+		* {
+			box-sizing: border-box
+		}
 
-/* Simple, compact attendance app */
-:root{--g:#087f5b;--g2:#eaf5ef;--bg:#f5f7f6;--ink:#19362b;--mut:#708078;--line:#e0e8e3}
-body{background:#f5f7f6;color:var(--ink)}
-header{background:#fff;color:var(--ink);padding:12px clamp(12px,3vw,24px);border-bottom:1px solid var(--line);box-shadow:0 2px 8px #183b2a08}
-header h1{font-size:19px;font-weight:800}header small{color:var(--mut);opacity:1;font-size:11px}
-header button.secondary{background:#f0f5f2;border:1px solid var(--line);color:#2e5c48}
-main{max-width:900px;margin:12px auto;padding:0 12px 88px}
-.panel{box-shadow:none;border-color:var(--line);border-radius:16px;padding:14px;margin-bottom:10px}
-.tabs{background:#fff;border:1px solid var(--line);border-radius:14px;padding:5px;gap:4px;box-shadow:none}
-.tabs button{min-height:42px;border-radius:10px;background:transparent;color:#61756a;padding:7px 9px}
-.tabs button.active{background:var(--g);color:white;box-shadow:none}
-.month{font-size:22px;font-weight:800}.muted{font-size:12px;line-height:1.4}
-#calendarTab .panel:first-child>.flex>.row button{min-height:38px;padding:7px 10px}
-.stats{gap:7px;margin:12px 0}.stat{box-shadow:none;background:#fafcfb;border-color:var(--line);padding:10px;border-radius:12px}.stat b{font-size:19px}
-.calendar{gap:4px}.day{min-height:78px;border-radius:10px;padding:6px 5px;box-shadow:none;background:#fff}.day:hover{transform:none;box-shadow:none}.day.selected{border:2px solid var(--g);box-shadow:0 0 0 2px #087f5b12}.day .num{font-size:15px}.day .pill{font-size:9px}.day .line,.day .hours{font-size:9px}
-.field input[type=time]{cursor:pointer;background:#f8fbf9;font-weight:750;letter-spacing:.02em}
-#dayModal .panel{box-shadow:0 -8px 30px #152e2215}
-.time-overlay{position:fixed;inset:0;z-index:2000;background:rgba(13,30,23,.45);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px}
-.time-overlay.show{display:flex;animation:fadeIn .15s ease both}
-.time-dialog{width:min(360px,100%);background:#fff;border-radius:22px;padding:20px;box-shadow:0 18px 55px #071b1260;animation:timePop .2s cubic-bezier(.2,.8,.2,1) both}
-.time-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.time-kicker{font-size:10px;letter-spacing:.12em;color:var(--mut);font-weight:800}.time-head h3{font-size:18px;margin:3px 0 0}.time-close{width:36px;height:36px;padding:0;border-radius:50%;background:#f1f5f2;color:#4d6257;font-size:24px;font-weight:400}
-.time-preview{text-align:center;font-size:48px;font-weight:850;letter-spacing:-.06em;color:var(--g);padding:16px 0 20px;font-variant-numeric:tabular-nums}
-.time-selects{display:grid;grid-template-columns:1fr 20px 1fr;align-items:end;gap:8px}.time-selects label{font-size:12px;color:var(--mut);font-weight:700}.time-selects select{display:block;width:100%;margin-top:6px;height:54px;border:1px solid var(--line);border-radius:13px;background:#f7faf8;color:var(--ink);font-size:23px;font-weight:800;text-align:center;appearance:auto}.time-colon{font-size:28px;font-weight:800;text-align:center;padding-bottom:9px}
-.time-quick{display:flex;flex-wrap:wrap;gap:6px;margin:15px 0}.time-quick button{flex:1;min-width:54px;background:#eef6f1;color:#2e654c;border:1px solid #e0eee5;border-radius:9px;padding:8px 6px;font-size:12px}
-.time-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.time-actions button{min-height:44px;border-radius:12px}.time-actions .secondary{background:#f0f5f2;color:#426451;border:1px solid var(--line)}
-@keyframes timePop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-@media(max-width:760px){main{padding-bottom:86px}.tabs{position:fixed;bottom:0;top:auto;left:0;right:0;margin:0;border-radius:15px 15px 0 0;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:100;background:#ffffffef;backdrop-filter:blur(16px);border-bottom:0}.tabs button{min-height:52px;flex-direction:column;gap:2px;padding:4px 2px}.tabs button .tablabel{font-size:10px}.day{min-height:65px;padding:5px 3px}.day .line{display:none}.day .hours{font-size:8px;white-space:nowrap;overflow:hidden}.day .pill{font-size:0;width:7px;height:7px;padding:0;border-radius:50%;align-self:center}.day.work .pill{background:#0b9b6d}.day.off .pill{background:#e1a23d}.day.unset .pill{background:#b8c5be}.day.ph .pill{background:#d34b42}}
-@media(max-width:420px){main{padding-left:8px;padding-right:8px}.panel{padding:11px}.month{font-size:20px}.stat{padding:8px}.stat b{font-size:17px}.calendar{gap:3px}.day{min-height:57px}.day .num{font-size:14px}.day .hours{font-size:7px}}
-@media(prefers-reduced-motion:reduce){.time-overlay.show,.time-dialog{animation:none}}
+		body {
+			margin: 0;
+			background: var(--bg);
+			color: var(--ink);
+			font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif
+		}
 
-/* Attendance abbreviations: always visible, including narrow screens */
-.code-legend{display:flex;flex-wrap:wrap;gap:7px 13px;padding:14px 2px 2px;margin-top:10px;border-top:1px solid var(--line);color:var(--mut);font-size:11px;line-height:1.4}
-.code-legend span{white-space:nowrap}.code-legend b{display:inline-block;margin-right:3px;color:var(--g);font-weight:850}
-.day .pill{font-size:9px!important;width:auto!important;height:auto!important;padding:3px 5px!important;border-radius:6px!important;align-self:flex-start!important;white-space:nowrap;display:inline-flex;align-items:center}
-.day .mark{font-size:8px;font-weight:850;line-height:1;letter-spacing:.02em;color:#6a7d73;background:#edf3ef;border-radius:5px;padding:3px 4px;align-self:flex-start}
-.day.work .pill{background:#e2f5eb!important;color:#126a49!important}
-.day.off .pill{background:#fff0d6!important;color:#875300!important}
-.day.ph .mark{background:#ffebe9;color:#a32c24}
-.day.rest .mark{background:#fff0d6;color:#875300}
-.day .line{display:none!important}
-.day .hours{display:none!important}
-@media(max-width:760px){.code-legend{gap:6px 10px;font-size:10px;padding-top:11px}}
-@media(max-width:420px){
- .day{align-items:flex-start!important;gap:3px!important}
- .day .pill{font-size:8px!important;max-width:100%;overflow:hidden;text-overflow:ellipsis}
- .day .mark{font-size:7px;padding:2px 3px}
- .day .num{align-self:flex-start!important}
-}
+		header {
+			background: linear-gradient(115deg, #075b43, #0a9369);
+			color: white;
+			padding: 16px max(14px, calc((100% - 1220px)/2));
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			flex-wrap: wrap
+		}
 
-/* Simple calendar cell: date + OT at top, one attendance code in the center */
-.day{display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:0;min-height:76px;padding:7px 6px;border-radius:12px;position:relative}
-.day-top{display:flex;align-items:flex-start;justify-content:space-between;gap:2px;width:100%;min-width:0;line-height:1}
-.day .num{font-size:15px;font-weight:800;line-height:1.15}
-.day-ot{font-size:8px;font-weight:800;color:#c05b14;white-space:nowrap;line-height:1.2;text-align:right}
-.day-code{display:flex;align-items:center;justify-content:center;flex:1;min-height:22px;font-size:17px;font-weight:850;letter-spacing:-.03em;color:#087f5b;line-height:1}
-.day-code sup{font-size:9px;line-height:1;position:relative;top:-.35em;margin-left:1px}
-.day.work{background:#e1f6eb;border-color:#c5ead7}
-.day.work .day-code{color:#14734d}
-.day.off{background:#fff4dc;border-color:#f0dfb8}
-.day.off .day-code{color:#9a650a}
-.day.ph{background:#ffeded;border-color:#f1c4c2}
-.day.ph .day-code{color:#b52e2a}
-.day.rest{background:#f0f3f1;border-color:#dbe3de}
-.day.rest .day-code{color:#64776d}
-.day.unset{background:#fff}
-.day.unset .day-code{color:#9aa9a1;font-size:14px}
-.day.selected{outline:none;border:2px solid var(--g);box-shadow:0 0 0 3px #087f5b12}
-.day.today .num{color:var(--g)}
-.day.blank{min-height:0;padding:0}
-@media(max-width:760px){
- .day{min-height:68px;padding:6px 5px;border-radius:10px}
- .day .num{font-size:14px}
- .day-ot{font-size:8px}
- .day-code{font-size:16px}
-}
-@media(max-width:420px){
- .day{min-height:57px;padding:5px 3px;border-radius:9px}
- .day .num{font-size:13px}
- .day-ot{font-size:7px;letter-spacing:-.03em}
- .day-code{font-size:15px}
- .day-code sup{font-size:8px}
-}
+		h1 {
+			margin: 0;
+			font-size: 21px
+		}
 
-.quick-mark{padding:10px 0 12px;border-bottom:1px solid var(--line);margin-bottom:12px}
-.quick-mark-label{font-size:12px;color:var(--mut);font-weight:700;margin-bottom:8px}
-.quick-mark-buttons{display:flex;flex-wrap:wrap;gap:7px}
-.quick-mark-buttons button{border:1px solid #d6e5dd;background:#edf7f1;color:#176d4e;border-radius:10px;padding:8px 11px;font-size:12px;font-weight:800;min-height:36px}
-.quick-mark-buttons button:active{transform:scale(.96);background:#d9f0e4}
-@media(max-width:600px){.quick-mark-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.quick-mark-buttons button{padding:7px 3px;font-size:10px;min-height:34px}}
+		header small {
+			opacity: .85
+		}
 
-.quick-board{border:1px solid var(--line);background:linear-gradient(145deg,#f8fcf9,#eef7f2);border-radius:16px;padding:13px;margin:12px 0 16px;box-shadow:0 5px 18px #103c2b08}
-.quick-board-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.quick-board-head strong{display:block;font-size:15px;color:var(--ink)}
-.quick-board-head small{display:block;color:var(--mut);font-size:11px;line-height:1.35;margin-top:3px}
-.quick-toggle{min-width:58px;font-weight:900;border-radius:12px}
-.quick-toggle-on{background:#087f5b!important;color:#fff!important;border-color:#087f5b!important}
-.quick-board-controls{display:flex;align-items:flex-end;flex-wrap:wrap;gap:9px;margin-top:12px}
-.quick-code-label,.quick-range label{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--mut);font-weight:700}
-.quick-code-label select,.quick-range input{border:1px solid #d3e2da;border-radius:10px;background:white;color:var(--ink);padding:8px 9px;min-height:38px;font-size:13px;max-width:100%}
-.quick-range{display:flex;gap:7px}
-.quick-check{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mut);padding:8px 2px}
-.quick-check input{accent-color:#087f5b}
-#quickApply{min-height:38px;padding:8px 13px;border-radius:10px;font-size:12px;font-weight:800}
-.quick-hint{font-size:11px;color:var(--mut);margin-top:9px}
-@media(max-width:600px){
- .quick-board{padding:11px;border-radius:14px}
- .quick-board-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
- .quick-code-label{grid-column:1/-1}
- .quick-code-label select{width:100%}
- .quick-range{grid-column:1/-1}
- .quick-range label{flex:1;min-width:0}
- .quick-range input{width:100%;box-sizing:border-box;font-size:12px;padding:7px}
- .quick-check{padding:4px 0}
- #quickApply{grid-column:1/-1;width:100%}
-}
+		main {
+			max-width: 1220px;
+			margin: 16px auto;
+			padding: 0 12px
+		}
 
-.quick-times{flex:1 1 100%;border:1px solid #d9e8e0;border-radius:12px;background:#fff;padding:10px;margin-top:2px}
-.quick-time-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
-.quick-time-head strong{font-size:12px;color:var(--ink)}
-.quick-time-head small{font-size:10px;color:var(--mut)}
-.quick-swap-btn{padding:6px 10px;font-size:11px;white-space:nowrap;flex:0 0 auto}
-.quick-time-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.quick-time-grid label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;color:var(--mut);min-width:0}
-.quick-time-grid input{width:100%;box-sizing:border-box;border:1px solid #d3e2da;border-radius:9px;background:#f8fbf9;color:var(--ink);padding:8px 6px;min-height:38px;font-size:13px}
-.quick-save-times{margin-top:8px;padding:7px 11px;font-size:11px;border-radius:9px}
-@media(max-width:600px){.quick-time-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.quick-time-head{align-items:flex-start;flex-direction:column}.quick-times{grid-column:1/-1}}
+		button {
+			border: 0;
+			border-radius: 9px;
+			padding: 9px 12px;
+			background: var(--g);
+			color: white;
+			font-weight: 700;
+			cursor: pointer
+		}
 
-.quick-time-grid-simple{grid-template-columns:repeat(2,minmax(0,1fr));max-width:420px}
-.quick-auto-shift{margin-top:8px;border-radius:9px;background:#e9f6ef;color:#14734e;padding:8px 10px;font-size:12px;font-weight:800}
-@media(max-width:600px){.quick-time-grid-simple{grid-template-columns:repeat(2,minmax(0,1fr));max-width:none}.quick-auto-shift{font-size:11px}}
+		button.secondary {
+			background: #edf4f0;
+			color: #285746;
+			border: 1px solid var(--line)
+		}
 
-/* v16: giao diện gọn, giữ nguyên logic và các chức năng nguồn */
-.advanced-day{border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin:10px 0;background:#f7faf8}
-.advanced-day summary{cursor:pointer;font-weight:800;color:var(--mut);font-size:12px;list-style:none}
-.advanced-day summary::-webkit-details-marker{display:none}
-.advanced-day summary:after{content:"＋";float:right;color:var(--g);font-weight:900}
-.advanced-day[open] summary:after{content:"−"}
-.advanced-day .row{margin-top:10px}
+		button.red {
+			background: #fff0ee;
+			color: var(--red);
+			border: 1px solid #f0c8c3
+		}
+
+		.tabs {
+			display: flex;
+			gap: 7px;
+			flex-wrap: wrap;
+			margin-bottom: 12px
+		}
+
+		.tabs button {
+			background: #e2ece7;
+			color: #31584a
+		}
+
+		.tabs button.active {
+			background: var(--g);
+			color: white
+		}
+
+		.panel {
+			background: white;
+			border: 1px solid var(--line);
+			border-radius: 15px;
+			padding: 14px;
+			margin-bottom: 12px;
+			box-shadow: 0 3px 12px #163d2b08
+		}
+
+		.flex {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			flex-wrap: wrap
+		}
+
+		.row {
+			display: flex;
+			gap: 9px;
+			flex-wrap: wrap
+		}
+
+		.row>* {
+			flex: 1;
+			min-width: 125px
+		}
+
+		.month {
+			font-size: 20px;
+			font-weight: 850
+		}
+
+		.muted {
+			font-size: 12px;
+			color: var(--mut)
+		}
+
+		.title {
+			font-size: 16px;
+			font-weight: 850;
+			margin: 0 0 10px
+		}
+
+		.stats {
+			display: grid;
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 8px;
+			margin: 12px 0
+		}
+
+		.stat {
+			padding: 9px;
+			border: 1px solid var(--line);
+			background: #f7fbf9;
+			border-radius: 10px
+		}
+
+		.stat b {
+			display: block;
+			font-size: 18px;
+			margin-top: 3px
+		}
+
+		.calendar {
+			display: grid;
+			grid-template-columns: repeat(7, minmax(0, 1fr));
+			gap: 5px
+		}
+
+		.weekday {
+			text-align: center;
+			color: var(--mut);
+			font-size: 12px;
+			font-weight: 800;
+			padding: 5px 0
+		}
+
+		.day {
+			min-width: 0;
+			min-height: 120px;
+			padding: 7px;
+			border: 1px solid var(--line);
+			border-radius: 10px;
+			background: #fff;
+			text-align: left;
+			color: var(--ink);
+			display: flex;
+			flex-direction: column;
+			gap: 3px;
+			overflow: hidden
+		}
+
+		.day.selected {
+			outline: 2px solid var(--g);
+			border-color: var(--g)
+		}
+
+		.day.today .num {
+			color: var(--g)
+		}
+
+		.day.blank {
+			border: 0;
+			background: transparent;
+			min-height: 0
+		}
+
+		.num {
+			font-weight: 900;
+			font-size: 15px
+		}
+
+		.pill {
+			font-size: 10px;
+			font-weight: 850;
+			align-self: flex-start;
+			border-radius: 5px;
+			padding: 2px 5px;
+			background: var(--g2);
+			color: #176448
+		}
+
+		.day.rest .pill {
+			background: #fff0d6;
+			color: #8a5000
+		}
+
+		.day.ph .pill {
+			background: #ffebe9;
+			color: #a32c24
+		}
+
+		.day .line {
+			font-size: 10px;
+			line-height: 1.25;
+			color: #50675d;
+			overflow-wrap: anywhere
+		}
+
+		.day .hours {
+			font-size: 10px;
+			font-weight: 800;
+			margin-top: auto;
+			color: #1b6c4d
+		}
+
+		.detailgrid {
+			display: grid;
+			grid-template-columns: 1.2fr 1fr;
+			gap: 14px
+		}
+
+		.field {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			margin: 7px 0
+		}
+
+		.field label {
+			font-size: 12px;
+			font-weight: 800;
+			color: #52685f
+		}
+
+		.field input,
+		.field select,
+		.field textarea {
+			width: 100%;
+			padding: 9px;
+			border: 1px solid #cbd9d2;
+			border-radius: 8px;
+			background: white;
+			color: var(--ink);
+			font: inherit
+		}
+
+		.field textarea {
+			min-height: 60px
+		}
+
+		.settings {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 8px
+		}
+
+		.setting {
+			border: 1px solid var(--line);
+			border-radius: 9px;
+			padding: 8px
+		}
+
+		.setting label {
+			display: block;
+			font-size: 11px;
+			color: var(--mut);
+			margin-bottom: 4px
+		}
+
+		.setting input {
+			width: 100%;
+			padding: 7px;
+			border: 1px solid #cbd9d2;
+			border-radius: 7px
+		}
+
+		.setting.check {
+			display: flex;
+			gap: 7px;
+			align-items: center
+		}
+
+		.setting.check input {
+			width: auto
+		}
+
+		.setting.check label {
+			margin: 0;
+			color: var(--ink)
+		}
+
+		table {
+			border-collapse: collapse;
+			width: 100%
+		}
+
+		td,
+		th {
+			padding: 8px;
+			border-bottom: 1px solid var(--line);
+			text-align: left
+		}
+
+		td:last-child {
+			text-align: right;
+			font-variant-numeric: tabular-nums
+		}
+
+		.total {
+			font-weight: 850;
+			background: #f1faf5
+		}
+
+		.section {
+			font-weight: 850;
+			margin: 18px 0 8px
+		}
+
+		.notice {
+			padding: 10px;
+			background: #fff8e5;
+			border: 1px solid #eedeb5;
+			border-radius: 9px;
+			color: #785500;
+			margin: 9px 0
+		}
+
+		.hide {
+			display: none !important
+		}
+
+		@media(max-width:760px) {
+			main {
+				margin: 9px auto
+			}
+
+			.stats {
+				grid-template-columns: repeat(2, 1fr)
+			}
+
+			.detailgrid {
+				grid-template-columns: 1fr
+			}
+
+			.settings {
+				grid-template-columns: repeat(2, minmax(0, 1fr))
+			}
+
+			.calendar {
+				gap: 3px
+			}
+
+			.day {
+				min-height: 86px;
+				padding: 4px;
+				border-radius: 7px
+			}
+
+			.day .line {
+				font-size: 9px
+			}
+
+			.day .hours {
+				font-size: 9px
+			}
+
+			.weekday {
+				font-size: 10px
+			}
+		}
+
+		/* Compact, app-like interaction */
+		.tabs {
+			position: sticky;
+			top: 0;
+			z-index: 20;
+			background: var(--bg);
+			padding: 7px 0;
+			margin: 0 0 10px;
+			gap: 6px
+		}
+
+		.tabs button {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 7px;
+			min-height: 42px;
+			padding: 8px 13px;
+			border-radius: 12px
+		}
+
+		.tabs button .tabicon {
+			font-size: 19px;
+			line-height: 1
+		}
+
+		.tabs button .tablabel {
+			font-size: 13px
+		}
+
+		.day {
+			cursor: pointer;
+			transition: transform .12s, box-shadow .12s
+		}
+
+		.day:active {
+			transform: scale(.97)
+		}
+
+		.day .num {
+			font-size: 16px
+		}
+
+		.day .pill {
+			font-size: 10px
+		}
+
+		#dayModal {
+			position: fixed;
+			inset: 0;
+			z-index: 1000;
+			background: #10251dcc;
+			display: none;
+			align-items: flex-end;
+			justify-content: center;
+			padding: 0
+		}
+
+		#dayModal.open {
+			display: flex
+		}
+
+		#dayModal .panel {
+			width: min(850px, 100%);
+			max-height: 92vh;
+			overflow: auto;
+			margin: 0;
+			border-radius: 22px 22px 0 0;
+			padding: 16px;
+			box-shadow: 0 -10px 40px #0002
+		}
+
+		#dayModal .modalbar {
+			position: sticky;
+			top: -16px;
+			background: #fff;
+			z-index: 5;
+			padding: 4px 0 10px;
+			border-bottom: 1px solid var(--line);
+			margin-bottom: 10px
+		}
+
+		#dayModal .detailgrid {
+			grid-template-columns: 1fr 230px;
+			gap: 12px
+		}
+
+		#dayModal .notice {
+			font-size: 12px
+		}
+
+		.settings {
+			transition: all .18s
+		}
+
+		.section.setting-toggle {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			border: 1px solid var(--line);
+			border-radius: 12px;
+			padding: 12px;
+			margin: 10px 0 6px;
+			background: #f8fbf9;
+			cursor: pointer;
+			font-size: 14px
+		}
+
+		.section.setting-toggle:before {
+			content: attr(data-icon);
+			display: grid;
+			place-items: center;
+			width: 34px;
+			height: 34px;
+			flex: 0 0 34px;
+			border-radius: 10px;
+			background: #e2f3e9;
+			font-size: 19px
+		}
+
+		.section.setting-toggle:after {
+			content: '⌄';
+			margin-left: auto;
+			color: var(--mut);
+			font-size: 20px
+		}
+
+		.section.setting-toggle.collapsed:after {
+			content: '›'
+		}
+
+		.settings.collapsed {
+			display: none
+		}
+
+		#settingsTab .panel>h2 {
+			display: flex;
+			align-items: center;
+			gap: 8px
+		}
+
+		#settingsTab .panel>h2:before {
+			content: '⚙️';
+			font-size: 22px
+		}
+
+		#saveDay {
+			width: 100%;
+			min-height: 48px;
+			font-size: 15px
+		}
+
+		@media(max-width:600px) {
+			main {
+				padding: 0 8px
+			}
+
+			.tabs {
+				justify-content: space-around
+			}
+
+			.tabs button {
+				flex: 1;
+				padding: 7px 4px;
+				min-width: 0
+			}
+
+			.tabs button .tablabel {
+				display: none
+			}
+
+			.tabs button .tabicon {
+				font-size: 22px
+			}
+
+			#dayModal {
+				align-items: flex-end
+			}
+
+			#dayModal .panel {
+				max-height: 94vh;
+				padding: 13px;
+				border-radius: 20px 20px 0 0
+			}
+
+			#dayModal .detailgrid {
+				grid-template-columns: 1fr
+			}
+
+			#dayModal .detailgrid>div:last-child {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 8px
+			}
+
+			#dayModal .detailgrid>div:last-child .notice {
+				grid-column: 1/-1;
+				margin: 0
+			}
+
+			#dayModal .detailgrid>div:last-child .field {
+				margin: 0
+			}
+
+			#dayModal .detailgrid>div:last-child #saveDay {
+				grid-column: 1/-1
+			}
+
+			.day {
+				min-height: 78px;
+				padding: 4px 3px
+			}
+
+			.day .line {
+				font-size: 8px
+			}
+
+			.day .hours {
+				font-size: 8px
+			}
+
+			.day .pill {
+				font-size: 9px;
+				padding: 2px 3px
+			}
+		}
+
+		@media(min-width:601px) {
+			#dayModal {
+				align-items: center;
+				padding: 18px
+			}
+
+			#dayModal .panel {
+				border-radius: 18px;
+				max-height: 90vh
+			}
+		}
+
+		/* ===== Responsive Pro UI refresh ===== */
+		:root {
+			--g: #087f5b;
+			--g2: #e7f6ee;
+			--bg: #f4f7f6;
+			--ink: #18352b;
+			--mut: #71837b;
+			--line: #dce7e2;
+			--white: #fff;
+			--red: #b42318;
+			--orange: #9a6200;
+			--shadow: 0 10px 30px rgba(20, 54, 39, .07);
+		}
+
+		html {
+			width: 100%;
+			overflow-x: clip;
+			scroll-behavior: smooth
+		}
+
+		body {
+			width: 100%;
+			min-width: 0;
+			overflow-x: clip;
+			background: linear-gradient(180deg, #f3f8f5 0%, #f5f7f6 36%, #f3f6f5 100%);
+			-webkit-tap-highlight-color: transparent
+		}
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box
+		}
+
+		header {
+			width: 100%;
+			max-width: 100%;
+			padding: clamp(14px, 3vw, 28px) max(16px, calc((100% - 1160px)/2));
+			gap: 14px
+		}
+
+		header h1 {
+			font-size: clamp(20px, 3vw, 30px);
+			letter-spacing: -.035em
+		}
+
+		header small {
+			display: block;
+			font-size: clamp(11px, 1.4vw, 14px);
+			margin-top: 4px
+		}
+
+		header .row {
+			gap: 8px;
+			flex: 0 1 auto !important
+		}
+
+		header button {
+			min-height: 40px;
+			padding: 9px 13px;
+			font-size: 13px;
+			border-radius: 12px;
+			white-space: nowrap
+		}
+
+		main {
+			width: 100%;
+			max-width: 1160px;
+			min-width: 0;
+			margin: 22px auto;
+			padding: 0 clamp(12px, 2.5vw, 26px) 30px
+		}
+
+		.panel {
+			min-width: 0;
+			border: 1px solid rgba(214, 229, 221, .9);
+			border-radius: clamp(16px, 2vw, 24px);
+			padding: clamp(14px, 2.2vw, 24px);
+			box-shadow: var(--shadow);
+			margin-bottom: 16px
+		}
+
+		.tabs {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			width: 100%;
+			min-width: 0;
+			padding: 8px;
+			margin: 0 0 16px;
+			border: 1px solid #e1ebe5;
+			border-radius: 18px;
+			background: rgba(255, 255, 255, .84);
+			box-shadow: 0 6px 20px #153d2b0b;
+			backdrop-filter: blur(16px)
+		}
+
+		.tabs button {
+			flex: 1 1 0;
+			min-width: 0;
+			min-height: 48px;
+			padding: 8px 10px;
+			gap: 8px;
+			border-radius: 13px;
+			font-size: 13px;
+			transition: background .2s, color .2s, transform .2s, box-shadow .2s
+		}
+
+		.tabs button .tabicon {
+			font-size: 20px
+		}
+
+		.tabs button.active {
+			box-shadow: 0 5px 14px #087f5b25
+		}
+
+		.tabs button:active {
+			transform: scale(.97)
+		}
+
+		#calendarTab>.panel:first-child {
+			animation: riseIn .35s cubic-bezier(.2, .7, .2, 1) both
+		}
+
+		.month {
+			font-size: clamp(20px, 3vw, 28px);
+			letter-spacing: -.04em;
+			line-height: 1.2;
+			text-transform: capitalize
+		}
+
+		#calendarTab .panel:first-child .muted {
+			font-size: 13px;
+			line-height: 1.55;
+			margin-top: 7px;
+			max-width: 580px
+		}
+
+		#calendarTab .panel:first-child>.flex {
+			align-items: center
+		}
+
+		#calendarTab .panel:first-child>.flex>.row {
+			flex: 0 0 auto !important;
+			min-width: 0;
+			gap: 6px
+		}
+
+		#calendarTab .panel:first-child>.flex>.row button {
+			min-width: 0 !important;
+			flex: 0 0 auto !important;
+			padding: 10px 14px;
+			min-height: 42px;
+			border-radius: 12px
+		}
+
+		#thisMonth {
+			white-space: nowrap
+		}
+
+		.stats {
+			gap: 10px;
+			margin: 18px 0
+		}
+
+		.stat {
+			min-width: 0;
+			border: 1px solid #e0ebe5;
+			border-radius: 15px;
+			padding: 13px 15px;
+			background: linear-gradient(145deg, #fbfdfc, #f5faf7)
+		}
+
+		.stat span {
+			font-size: 12px;
+			line-height: 1.4
+		}
+
+		.stat b {
+			font-size: clamp(18px, 2.4vw, 25px);
+			letter-spacing: -.03em;
+			overflow-wrap: anywhere
+		}
+
+		.calendar {
+			width: 100%;
+			min-width: 0;
+			gap: 6px
+		}
+
+		.weekday {
+			font-size: 12px;
+			padding: 8px 0;
+			color: #73857c
+		}
+
+		.day {
+			width: 100%;
+			min-width: 0;
+			min-height: 112px;
+			padding: 9px;
+			border-radius: 14px;
+			gap: 5px;
+			box-shadow: 0 1px 0 #143d2b05;
+			transition: transform .18s cubic-bezier(.2, .8, .2, 1), border-color .18s, box-shadow .18s, background .18s
+		}
+
+		.day:hover {
+			transform: translateY(-2px);
+			border-color: #a9cdbb;
+			box-shadow: 0 7px 16px #153d2b12
+		}
+
+		.day.selected {
+			outline: none;
+			border: 2px solid var(--g);
+			box-shadow: 0 0 0 4px #087f5b12
+		}
+
+		.day .num {
+			font-size: 17px;
+			line-height: 1.2
+		}
+
+		.day .pill {
+			font-size: 10px;
+			padding: 3px 6px;
+			border-radius: 7px;
+			max-width: 100%;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis
+		}
+
+		.day .line {
+			font-size: 10px;
+			line-height: 1.3;
+			color: #64776d
+		}
+
+		.day .hours {
+			font-size: 10px;
+			line-height: 1.3;
+			margin-top: auto;
+			white-space: normal
+		}
+
+		.day.blank {
+			min-height: 0;
+			padding: 0
+		}
+
+		button,
+		input,
+		select,
+		textarea {
+			font: inherit
+		}
+
+		button {
+			touch-action: manipulation;
+			transition: filter .15s, transform .15s
+		}
+
+		button:active {
+			filter: brightness(.97)
+		}
+
+		.row {
+			min-width: 0;
+			gap: 9px
+		}
+
+		.row>* {
+			min-width: 0
+		}
+
+		.field {
+			min-width: 0
+		}
+
+		.field input,
+		.field select,
+		.field textarea {
+			min-width: 0;
+			min-height: 44px;
+			border-radius: 11px;
+			border-color: #d5e2db;
+			background: #fbfdfc
+		}
+
+		.field input:focus,
+		.field select:focus,
+		.field textarea:focus {
+			outline: 3px solid #087f5b1b;
+			border-color: #62a98b
+		}
+
+		.detailgrid {
+			min-width: 0
+		}
+
+		#dayModal {
+			backdrop-filter: blur(5px);
+			animation: fadeIn .18s ease both
+		}
+
+		#dayModal .panel {
+			padding: clamp(14px, 3vw, 24px);
+			border: 0;
+			border-radius: 24px 24px 0 0;
+			max-height: min(92dvh, 900px);
+			overscroll-behavior: contain;
+			animation: sheetIn .28s cubic-bezier(.2, .75, .2, 1) both
+		}
+
+		#dayModal .modalbar {
+			top: -16px;
+			padding: 8px 0 12px;
+			gap: 10px
+		}
+
+		#dayModal .detailgrid {
+			grid-template-columns: minmax(0, 1fr) 220px
+		}
+
+		#dayModal .modalbar .row {
+			flex: 0 0 auto !important;
+			min-width: 0
+		}
+
+		#dayModal .modalbar button {
+			min-width: 40px !important;
+			min-height: 40px;
+			padding: 8px
+		}
+
+		#dayModal #saveDay {
+			position: sticky;
+			bottom: 0;
+			width: 100%;
+			min-height: 48px;
+			border-radius: 14px;
+			box-shadow: 0 -8px 20px #ffffffd9
+		}
+
+		#dayModal .notice {
+			font-size: 12px;
+			line-height: 1.5
+		}
+
+		#payResult {
+			overflow-x: auto
+		}
+
+		#payResult table {
+			min-width: 0
+		}
+
+		#payResult td {
+			font-size: 13px
+		}
+
+		#settingsTab .panel>h2 {
+			font-size: 20px;
+			letter-spacing: -.03em
+		}
+
+		.setting {
+			min-width: 0;
+			border-radius: 12px;
+			background: #fbfdfc
+		}
+
+		.setting input {
+			min-width: 0;
+			max-width: 100%;
+			border-radius: 9px
+		}
+
+		.section.setting-toggle {
+			transition: background .18s, transform .18s, border-color .18s
+		}
+
+		.section.setting-toggle:active {
+			transform: scale(.99)
+		}
+
+		.settings {
+			min-width: 0
+		}
+
+		#monthinputsTab .panel {
+			min-width: 0
+		}
+
+		#items .row {
+			align-items: flex-end
+		}
+
+		.calendar-enter {
+			animation: riseIn .24s cubic-bezier(.2, .7, .2, 1) both
+		}
+
+		@keyframes riseIn {
+			from {
+				opacity: 0;
+				transform: translateY(10px)
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0)
+			}
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0
+			}
+
+			to {
+				opacity: 1
+			}
+		}
+
+		@keyframes sheetIn {
+			from {
+				opacity: .7;
+				transform: translateY(24px)
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0)
+			}
+		}
+
+		@media(max-width:760px) {
+			main {
+				margin: 10px auto;
+				padding: 0 12px 92px
+			}
+
+			header {
+				padding: 15px 14px;
+				align-items: flex-start
+			}
+
+			header>div:first-child {
+				min-width: 0;
+				flex: 1 1 100%
+			}
+
+			header h1 {
+				font-size: 22px
+			}
+
+			header .row {
+				width: 100%;
+				display: grid;
+				grid-template-columns: 1fr 1fr
+			}
+
+			header button {
+				width: 100%;
+				min-width: 0 !important
+			}
+
+			.tabs {
+				position: fixed;
+				top: auto;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				z-index: 100;
+				padding: 8px max(12px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+				margin: 0;
+				border-radius: 18px 18px 0 0;
+				border: 1px solid #dce8e1;
+				border-bottom: 0;
+				background: rgba(255, 255, 255, .94);
+				box-shadow: 0 -8px 30px #143d2b12;
+				backdrop-filter: blur(20px)
+			}
+
+			.tabs button {
+				flex: 1 1 0;
+				display: flex;
+				flex-direction: column;
+				gap: 3px;
+				min-height: 56px;
+				padding: 5px 2px;
+				border-radius: 12px
+			}
+
+			.tabs button .tabicon {
+				font-size: 21px
+			}
+
+			.tabs button .tablabel {
+				font-size: 10px;
+				line-height: 1.2;
+				white-space: nowrap
+			}
+
+			.panel {
+				padding: 15px;
+				border-radius: 19px;
+				margin-bottom: 12px
+			}
+
+			#calendarTab>.panel:first-child .flex {
+				align-items: flex-start
+			}
+
+			#calendarTab .panel:first-child>.flex>.row {
+				width: 100%;
+				display: grid;
+				grid-template-columns: 44px minmax(0, 1fr) 44px;
+				gap: 7px;
+				margin-top: 12px
+			}
+
+			#calendarTab .panel:first-child>.flex>.row button {
+				width: 100%;
+				min-width: 0 !important;
+				padding: 8px 4px;
+				min-height: 42px
+			}
+
+			.month {
+				font-size: 23px
+			}
+
+			.stats {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 8px;
+				margin: 14px 0
+			}
+
+			.stat {
+				padding: 11px;
+				border-radius: 13px
+			}
+
+			.stat b {
+				font-size: 20px
+			}
+
+			.calendar {
+				gap: 4px
+			}
+
+			.weekday {
+				font-size: 11px;
+				padding: 5px 0
+			}
+
+			.day {
+				min-height: 72px;
+				padding: 6px 5px;
+				border-radius: 10px;
+				gap: 4px
+			}
+
+			.day .num {
+				font-size: 15px
+			}
+
+			.day .pill {
+				font-size: 9px;
+				padding: 2px 4px;
+				border-radius: 6px
+			}
+
+			.day .line {
+				font-size: 9px;
+				line-height: 1.2
+			}
+
+			.day .hours {
+				font-size: 9px;
+				line-height: 1.2
+			}
+
+			.detailgrid {
+				grid-template-columns: minmax(0, 1fr)
+			}
+
+			#dayModal .detailgrid {
+				grid-template-columns: minmax(0, 1fr);
+				gap: 8px
+			}
+
+			#dayModal .detailgrid>div:last-child {
+				padding-top: 4px
+			}
+
+			#dayModal .panel {
+				width: 100%;
+				max-height: 94dvh;
+				padding: 14px 14px calc(16px + env(safe-area-inset-bottom))
+			}
+
+			#dayModal .modalbar {
+				top: -14px
+			}
+
+			#dayModal .modalbar .title {
+				font-size: 17px
+			}
+
+			#dayModal .row {
+				gap: 7px
+			}
+
+			#dayModal .row>* {
+				flex: 1 1 calc(50% - 7px);
+				min-width: 0
+			}
+
+			#dayModal .field {
+				margin: 5px 0
+			}
+
+			#dayModal .field label {
+				font-size: 11px
+			}
+
+			#dayModal .field input,
+			#dayModal .field select {
+				min-height: 43px;
+				padding: 8px
+			}
+
+			#dayModal #saveDay {
+				bottom: -1px;
+				margin-top: 8px
+			}
+
+			.settings {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 7px
+			}
+
+			.setting {
+				padding: 8px
+			}
+
+			.setting label {
+				font-size: 10px;
+				overflow-wrap: anywhere
+			}
+
+			.setting input {
+				padding: 7px;
+				font-size: 13px
+			}
+
+			#payResult table {
+				width: 100%;
+				table-layout: fixed
+			}
+
+			#payResult td {
+				padding: 9px 6px;
+				font-size: 12px;
+				overflow-wrap: anywhere
+			}
+
+			#payResult td:first-child {
+				width: 62%
+			}
+		}
+
+		@media(max-width:420px) {
+			main {
+				padding-left: 9px;
+				padding-right: 9px
+			}
+
+			header {
+				padding: 13px 12px
+			}
+
+			header h1 {
+				font-size: 20px
+			}
+
+			.tabs {
+				gap: 4px;
+				padding-left: 8px;
+				padding-right: 8px
+			}
+
+			.tabs button .tablabel {
+				font-size: 9px
+			}
+
+			#calendarTab>.panel:first-child {
+				padding: 12px
+			}
+
+			#calendarTab .panel:first-child .muted {
+				font-size: 12px
+			}
+
+			.month {
+				font-size: 21px
+			}
+
+			.stats {
+				gap: 7px
+			}
+
+			.stat {
+				padding: 9px 10px
+			}
+
+			.stat span {
+				font-size: 11px
+			}
+
+			.stat b {
+				font-size: 18px
+			}
+
+			.calendar {
+				gap: 3px
+			}
+
+			.day {
+				min-height: 60px;
+				padding: 5px 3px;
+				border-radius: 8px;
+				align-items: center
+			}
+
+			.day .num {
+				align-self: flex-start;
+				font-size: 14px
+			}
+
+			.day .pill {
+				font-size: 0;
+				width: 7px;
+				height: 7px;
+				padding: 0;
+				border-radius: 50%;
+				align-self: center
+			}
+
+			.day.work .pill {
+				background: #079568
+			}
+
+			.day.off .pill {
+				background: #e2a13b
+			}
+
+			.day.unset .pill {
+				background: #b8c5be
+			}
+
+			.day.ph .pill {
+				background: #d34b42
+			}
+
+			.day .line {
+				display: none
+			}
+
+			.day .hours {
+				font-size: 8px;
+				white-space: nowrap;
+				overflow: hidden;
+				max-width: 100%;
+				text-overflow: ellipsis;
+				margin-top: 0
+			}
+
+			.day.blank {
+				min-height: 0
+			}
+
+			#dayModal .panel {
+				border-radius: 20px 20px 0 0
+			}
+		}
+
+		@media(prefers-reduced-motion:reduce) {
+
+			*,
+			*::before,
+			*::after {
+				animation-duration: .01ms !important;
+				animation-iteration-count: 1 !important;
+				transition-duration: .01ms !important;
+				scroll-behavior: auto !important
+			}
+		}
+
+		/* Simple, compact attendance app */
+		:root {
+			--g: #087f5b;
+			--g2: #eaf5ef;
+			--bg: #f5f7f6;
+			--ink: #19362b;
+			--mut: #708078;
+			--line: #e0e8e3
+		}
+
+		body {
+			background: #f5f7f6;
+			color: var(--ink)
+		}
+
+		header {
+			background: #fff;
+			color: var(--ink);
+			padding: 12px clamp(12px, 3vw, 24px);
+			border-bottom: 1px solid var(--line);
+			box-shadow: 0 2px 8px #183b2a08
+		}
+
+		header h1 {
+			font-size: 19px;
+			font-weight: 800
+		}
+
+		header small {
+			color: var(--mut);
+			opacity: 1;
+			font-size: 11px
+		}
+
+		header button.secondary {
+			background: #f0f5f2;
+			border: 1px solid var(--line);
+			color: #2e5c48
+		}
+
+		main {
+			max-width: 900px;
+			margin: 12px auto;
+			padding: 0 12px 88px
+		}
+
+		.panel {
+			box-shadow: none;
+			border-color: var(--line);
+			border-radius: 16px;
+			padding: 14px;
+			margin-bottom: 10px
+		}
+
+		.tabs {
+			background: #fff;
+			border: 1px solid var(--line);
+			border-radius: 14px;
+			padding: 5px;
+			gap: 4px;
+			box-shadow: none
+		}
+
+		.tabs button {
+			min-height: 42px;
+			border-radius: 10px;
+			background: transparent;
+			color: #61756a;
+			padding: 7px 9px
+		}
+
+		.tabs button.active {
+			background: var(--g);
+			color: white;
+			box-shadow: none
+		}
+
+		.month {
+			font-size: 22px;
+			font-weight: 800
+		}
+
+		.muted {
+			font-size: 12px;
+			line-height: 1.4
+		}
+
+		#calendarTab .panel:first-child>.flex>.row button {
+			min-height: 38px;
+			padding: 7px 10px
+		}
+
+		.stats {
+			gap: 7px;
+			margin: 12px 0
+		}
+
+		.stat {
+			box-shadow: none;
+			background: #fafcfb;
+			border-color: var(--line);
+			padding: 10px;
+			border-radius: 12px
+		}
+
+		.stat b {
+			font-size: 19px
+		}
+
+		.calendar {
+			gap: 4px
+		}
+
+		.day {
+			min-height: 78px;
+			border-radius: 10px;
+			padding: 6px 5px;
+			box-shadow: none;
+			background: #fff
+		}
+
+		.day:hover {
+			transform: none;
+			box-shadow: none
+		}
+
+		.day.selected {
+			border: 2px solid var(--g);
+			box-shadow: 0 0 0 2px #087f5b12
+		}
+
+		.day .num {
+			font-size: 15px
+		}
+
+		.day .pill {
+			font-size: 9px
+		}
+
+		.day .line,
+		.day .hours {
+			font-size: 9px
+		}
+
+		.field input[type=time] {
+			cursor: pointer;
+			background: #f8fbf9;
+			font-weight: 750;
+			letter-spacing: .02em
+		}
+
+		#dayModal .panel {
+			box-shadow: 0 -8px 30px #152e2215
+		}
+
+		.time-overlay {
+			position: fixed;
+			inset: 0;
+			z-index: 2000;
+			background: rgba(13, 30, 23, .45);
+			backdrop-filter: blur(3px);
+			display: none;
+			align-items: center;
+			justify-content: center;
+			padding: 16px
+		}
+
+		.time-overlay.show {
+			display: flex;
+			animation: fadeIn .15s ease both
+		}
+
+		.time-dialog {
+			width: min(360px, 100%);
+			background: #fff;
+			border-radius: 22px;
+			padding: 20px;
+			box-shadow: 0 18px 55px #071b1260;
+			animation: timePop .2s cubic-bezier(.2, .8, .2, 1) both
+		}
+
+		.time-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px
+		}
+
+		.time-kicker {
+			font-size: 10px;
+			letter-spacing: .12em;
+			color: var(--mut);
+			font-weight: 800
+		}
+
+		.time-head h3 {
+			font-size: 18px;
+			margin: 3px 0 0
+		}
+
+		.time-close {
+			width: 36px;
+			height: 36px;
+			padding: 0;
+			border-radius: 50%;
+			background: #f1f5f2;
+			color: #4d6257;
+			font-size: 24px;
+			font-weight: 400
+		}
+
+		.time-preview {
+			text-align: center;
+			font-size: 48px;
+			font-weight: 850;
+			letter-spacing: -.06em;
+			color: var(--g);
+			padding: 16px 0 20px;
+			font-variant-numeric: tabular-nums
+		}
+
+		.time-selects {
+			display: grid;
+			grid-template-columns: 1fr 20px 1fr;
+			align-items: end;
+			gap: 8px
+		}
+
+		.time-selects label {
+			font-size: 12px;
+			color: var(--mut);
+			font-weight: 700
+		}
+
+		.time-selects select {
+			display: block;
+			width: 100%;
+			margin-top: 6px;
+			height: 54px;
+			border: 1px solid var(--line);
+			border-radius: 13px;
+			background: #f7faf8;
+			color: var(--ink);
+			font-size: 23px;
+			font-weight: 800;
+			text-align: center;
+			appearance: auto
+		}
+
+		.time-colon {
+			font-size: 28px;
+			font-weight: 800;
+			text-align: center;
+			padding-bottom: 9px
+		}
+
+		.time-quick {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 6px;
+			margin: 15px 0
+		}
+
+		.time-quick button {
+			flex: 1;
+			min-width: 54px;
+			background: #eef6f1;
+			color: #2e654c;
+			border: 1px solid #e0eee5;
+			border-radius: 9px;
+			padding: 8px 6px;
+			font-size: 12px
+		}
+
+		.time-actions {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 8px;
+			margin-top: 8px
+		}
+
+		.time-actions button {
+			min-height: 44px;
+			border-radius: 12px
+		}
+
+		.time-actions .secondary {
+			background: #f0f5f2;
+			color: #426451;
+			border: 1px solid var(--line)
+		}
+
+		@keyframes timePop {
+			from {
+				opacity: 0;
+				transform: translateY(10px) scale(.97)
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0) scale(1)
+			}
+		}
+
+		@media(max-width:760px) {
+			main {
+				padding-bottom: 86px
+			}
+
+			.tabs {
+				position: fixed;
+				bottom: 0;
+				top: auto;
+				left: 0;
+				right: 0;
+				margin: 0;
+				border-radius: 15px 15px 0 0;
+				padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+				z-index: 100;
+				background: #ffffffef;
+				backdrop-filter: blur(16px);
+				border-bottom: 0
+			}
+
+			.tabs button {
+				min-height: 52px;
+				flex-direction: column;
+				gap: 2px;
+				padding: 4px 2px
+			}
+
+			.tabs button .tablabel {
+				font-size: 10px
+			}
+
+			.day {
+				min-height: 65px;
+				padding: 5px 3px
+			}
+
+			.day .line {
+				display: none
+			}
+
+			.day .hours {
+				font-size: 8px;
+				white-space: nowrap;
+				overflow: hidden
+			}
+
+			.day .pill {
+				font-size: 0;
+				width: 7px;
+				height: 7px;
+				padding: 0;
+				border-radius: 50%;
+				align-self: center
+			}
+
+			.day.work .pill {
+				background: #0b9b6d
+			}
+
+			.day.off .pill {
+				background: #e1a23d
+			}
+
+			.day.unset .pill {
+				background: #b8c5be
+			}
+
+			.day.ph .pill {
+				background: #d34b42
+			}
+		}
+
+		@media(max-width:420px) {
+			main {
+				padding-left: 8px;
+				padding-right: 8px
+			}
+
+			.panel {
+				padding: 11px
+			}
+
+			.month {
+				font-size: 20px
+			}
+
+			.stat {
+				padding: 8px
+			}
+
+			.stat b {
+				font-size: 17px
+			}
+
+			.calendar {
+				gap: 3px
+			}
+
+			.day {
+				min-height: 57px
+			}
+
+			.day .num {
+				font-size: 14px
+			}
+
+			.day .hours {
+				font-size: 7px
+			}
+		}
+
+		@media(prefers-reduced-motion:reduce) {
+
+			.time-overlay.show,
+			.time-dialog {
+				animation: none
+			}
+		}
+
+		/* Attendance abbreviations: always visible, including narrow screens */
+		.code-legend {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 7px 13px;
+			padding: 14px 2px 2px;
+			margin-top: 10px;
+			border-top: 1px solid var(--line);
+			color: var(--mut);
+			font-size: 11px;
+			line-height: 1.4
+		}
+
+		.code-legend span {
+			white-space: nowrap
+		}
+
+		.code-legend b {
+			display: inline-block;
+			margin-right: 3px;
+			color: var(--g);
+			font-weight: 850
+		}
+
+		.day .pill {
+			font-size: 9px !important;
+			width: auto !important;
+			height: auto !important;
+			padding: 3px 5px !important;
+			border-radius: 6px !important;
+			align-self: flex-start !important;
+			white-space: nowrap;
+			display: inline-flex;
+			align-items: center
+		}
+
+		.day .mark {
+			font-size: 8px;
+			font-weight: 850;
+			line-height: 1;
+			letter-spacing: .02em;
+			color: #6a7d73;
+			background: #edf3ef;
+			border-radius: 5px;
+			padding: 3px 4px;
+			align-self: flex-start
+		}
+
+		.day.work .pill {
+			background: #e2f5eb !important;
+			color: #126a49 !important
+		}
+
+		.day.off .pill {
+			background: #fff0d6 !important;
+			color: #875300 !important
+		}
+
+		.day.ph .mark {
+			background: #ffebe9;
+			color: #a32c24
+		}
+
+		.day.rest .mark {
+			background: #fff0d6;
+			color: #875300
+		}
+
+		.day .line {
+			display: none !important
+		}
+
+		.day .hours {
+			display: none !important
+		}
+
+		@media(max-width:760px) {
+			.code-legend {
+				gap: 6px 10px;
+				font-size: 10px;
+				padding-top: 11px
+			}
+		}
+
+		@media(max-width:420px) {
+			.day {
+				align-items: flex-start !important;
+				gap: 3px !important
+			}
+
+			.day .pill {
+				font-size: 8px !important;
+				max-width: 100%;
+				overflow: hidden;
+				text-overflow: ellipsis
+			}
+
+			.day .mark {
+				font-size: 7px;
+				padding: 2px 3px
+			}
+
+			.day .num {
+				align-self: flex-start !important
+			}
+		}
+
+		/* Simple calendar cell: date + OT at top, one attendance code in the center */
+		.day {
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-start;
+			align-items: stretch;
+			gap: 0;
+			min-height: 76px;
+			padding: 7px 6px;
+			border-radius: 12px;
+			position: relative
+		}
+
+		.day-top {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 2px;
+			width: 100%;
+			min-width: 0;
+			line-height: 1
+		}
+
+		.day .num {
+			font-size: 15px;
+			font-weight: 800;
+			line-height: 1.15
+		}
+
+		.day-ot {
+			font-size: 8px;
+			font-weight: 800;
+			color: #c05b14;
+			white-space: nowrap;
+			line-height: 1.2;
+			text-align: right
+		}
+
+		.day-code {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex: 1;
+			min-height: 22px;
+			font-size: 17px;
+			font-weight: 850;
+			letter-spacing: -.03em;
+			color: #087f5b;
+			line-height: 1
+		}
+
+		.day-code sup {
+			font-size: 9px;
+			line-height: 1;
+			position: relative;
+			top: -.35em;
+			margin-left: 1px
+		}
+
+		.day.work {
+			background: #e1f6eb;
+			border-color: #c5ead7
+		}
+
+		.day.work .day-code {
+			color: #14734d
+		}
+
+		.day.off {
+			background: #fff4dc;
+			border-color: #f0dfb8
+		}
+
+		.day.off .day-code {
+			color: #9a650a
+		}
+
+		.day.ph {
+			background: #ffeded;
+			border-color: #f1c4c2
+		}
+
+		.day.ph .day-code {
+			color: #b52e2a
+		}
+
+		.day.rest {
+			background: #f0f3f1;
+			border-color: #dbe3de
+		}
+
+		.day.rest .day-code {
+			color: #64776d
+		}
+
+		.day.unset {
+			background: #fff
+		}
+
+		.day.unset .day-code {
+			color: #9aa9a1;
+			font-size: 14px
+		}
+
+		.day.selected {
+			outline: none;
+			border: 2px solid var(--g);
+			box-shadow: 0 0 0 3px #087f5b12
+		}
+
+		.day.today .num {
+			color: var(--g)
+		}
+
+		.day.blank {
+			min-height: 0;
+			padding: 0
+		}
+
+		@media(max-width:760px) {
+			.day {
+				min-height: 68px;
+				padding: 6px 5px;
+				border-radius: 10px
+			}
+
+			.day .num {
+				font-size: 14px
+			}
+
+			.day-ot {
+				font-size: 8px
+			}
+
+			.day-code {
+				font-size: 16px
+			}
+		}
+
+		@media(max-width:420px) {
+			.day {
+				min-height: 57px;
+				padding: 5px 3px;
+				border-radius: 9px
+			}
+
+			.day .num {
+				font-size: 13px
+			}
+
+			.day-ot {
+				font-size: 7px;
+				letter-spacing: -.03em
+			}
+
+			.day-code {
+				font-size: 15px
+			}
+
+			.day-code sup {
+				font-size: 8px
+			}
+		}
+
+		.quick-mark {
+			padding: 10px 0 12px;
+			border-bottom: 1px solid var(--line);
+			margin-bottom: 12px
+		}
+
+		.quick-mark-label {
+			font-size: 12px;
+			color: var(--mut);
+			font-weight: 700;
+			margin-bottom: 8px
+		}
+
+		.quick-mark-buttons {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 7px
+		}
+
+		.quick-mark-buttons button {
+			border: 1px solid #d6e5dd;
+			background: #edf7f1;
+			color: #176d4e;
+			border-radius: 10px;
+			padding: 8px 11px;
+			font-size: 12px;
+			font-weight: 800;
+			min-height: 36px
+		}
+
+		.quick-mark-buttons button:active {
+			transform: scale(.96);
+			background: #d9f0e4
+		}
+
+		@media(max-width:600px) {
+			.quick-mark-buttons {
+				display: grid;
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+				gap: 6px
+			}
+
+			.quick-mark-buttons button {
+				padding: 7px 3px;
+				font-size: 10px;
+				min-height: 34px
+			}
+		}
+
+		.quick-board {
+			border: 1px solid var(--line);
+			background: linear-gradient(145deg, #f8fcf9, #eef7f2);
+			border-radius: 16px;
+			padding: 13px;
+			margin: 12px 0 16px;
+			box-shadow: 0 5px 18px #103c2b08
+		}
+
+		.quick-board-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px
+		}
+
+		.quick-board-head strong {
+			display: block;
+			font-size: 15px;
+			color: var(--ink)
+		}
+
+		.quick-board-head small {
+			display: block;
+			color: var(--mut);
+			font-size: 11px;
+			line-height: 1.35;
+			margin-top: 3px
+		}
+
+		.quick-toggle {
+			min-width: 58px;
+			font-weight: 900;
+			border-radius: 12px
+		}
+
+		.quick-toggle-on {
+			background: #087f5b !important;
+			color: #fff !important;
+			border-color: #087f5b !important
+		}
+
+		.quick-board-controls {
+			display: flex;
+			align-items: flex-end;
+			flex-wrap: wrap;
+			gap: 9px;
+			margin-top: 12px
+		}
+
+		.quick-code-label,
+		.quick-range label {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			font-size: 11px;
+			color: var(--mut);
+			font-weight: 700
+		}
+
+		.quick-code-label select,
+		.quick-range input {
+			border: 1px solid #d3e2da;
+			border-radius: 10px;
+			background: white;
+			color: var(--ink);
+			padding: 8px 9px;
+			min-height: 38px;
+			font-size: 13px;
+			max-width: 100%
+		}
+
+		.quick-range {
+			display: flex;
+			gap: 7px
+		}
+
+		.quick-check {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+			font-size: 11px;
+			color: var(--mut);
+			padding: 8px 2px
+		}
+
+		.quick-check input {
+			accent-color: #087f5b
+		}
+
+		#quickApply {
+			min-height: 38px;
+			padding: 8px 13px;
+			border-radius: 10px;
+			font-size: 12px;
+			font-weight: 800
+		}
+
+		.quick-hint {
+			font-size: 11px;
+			color: var(--mut);
+			margin-top: 9px
+		}
+
+		@media(max-width:600px) {
+			.quick-board {
+				padding: 11px;
+				border-radius: 14px
+			}
+
+			.quick-board-controls {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 8px
+			}
+
+			.quick-code-label {
+				grid-column: 1/-1
+			}
+
+			.quick-code-label select {
+				width: 100%
+			}
+
+			.quick-range {
+				grid-column: 1/-1
+			}
+
+			.quick-range label {
+				flex: 1;
+				min-width: 0
+			}
+
+			.quick-range input {
+				width: 100%;
+				box-sizing: border-box;
+				font-size: 12px;
+				padding: 7px
+			}
+
+			.quick-check {
+				padding: 4px 0
+			}
+
+			#quickApply {
+				grid-column: 1/-1;
+				width: 100%
+			}
+		}
+
+		.quick-times {
+			flex: 1 1 100%;
+			border: 1px solid #d9e8e0;
+			border-radius: 12px;
+			background: #fff;
+			padding: 10px;
+			margin-top: 2px
+		}
+
+		.quick-time-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 8px
+		}
+
+		.quick-time-head strong {
+			font-size: 12px;
+			color: var(--ink)
+		}
+
+		.quick-time-head small {
+			font-size: 10px;
+			color: var(--mut)
+		}
+
+		.quick-swap-btn {
+			padding: 6px 10px;
+			font-size: 11px;
+			white-space: nowrap;
+			flex: 0 0 auto
+		}
+
+		.quick-time-grid {
+			display: grid;
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 8px
+		}
+
+		.quick-time-grid label {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			font-size: 11px;
+			font-weight: 700;
+			color: var(--mut);
+			min-width: 0
+		}
+
+		.quick-time-grid input {
+			width: 100%;
+			box-sizing: border-box;
+			border: 1px solid #d3e2da;
+			border-radius: 9px;
+			background: #f8fbf9;
+			color: var(--ink);
+			padding: 8px 6px;
+			min-height: 38px;
+			font-size: 13px
+		}
+
+		.quick-save-times {
+			margin-top: 8px;
+			padding: 7px 11px;
+			font-size: 11px;
+			border-radius: 9px
+		}
+
+		@media(max-width:600px) {
+			.quick-time-grid {
+				grid-template-columns: repeat(2, minmax(0, 1fr))
+			}
+
+			.quick-time-head {
+				align-items: flex-start;
+				flex-direction: column
+			}
+
+			.quick-times {
+				grid-column: 1/-1
+			}
+		}
+
+		.quick-time-grid-simple {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			max-width: 420px
+		}
+
+		.quick-auto-shift {
+			margin-top: 8px;
+			border-radius: 9px;
+			background: #e9f6ef;
+			color: #14734e;
+			padding: 8px 10px;
+			font-size: 12px;
+			font-weight: 800
+		}
+
+		@media(max-width:600px) {
+			.quick-time-grid-simple {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				max-width: none
+			}
+
+			.quick-auto-shift {
+				font-size: 11px
+			}
+		}
+
+		/* v16: giao diện gọn, giữ nguyên logic và các chức năng nguồn */
+		.advanced-day {
+			border: 1px solid var(--line);
+			border-radius: 12px;
+			padding: 9px 11px;
+			margin: 10px 0;
+			background: #f7faf8
+		}
+
+		.advanced-day summary {
+			cursor: pointer;
+			font-weight: 800;
+			color: var(--mut);
+			font-size: 12px;
+			list-style: none
+		}
+
+		.advanced-day summary::-webkit-details-marker {
+			display: none
+		}
+
+		.advanced-day summary:after {
+			content: "＋";
+			float: right;
+			color: var(--g);
+			font-weight: 900
+		}
+
+		.advanced-day[open] summary:after {
+			content: "−"
+		}
+
+		.advanced-day .row {
+			margin-top: 10px
+		}
 
 
-/* v18 responsive fixes + Android-style calendar day colors */
-#calendarTab .panel:first-child>.flex{align-items:flex-start;gap:12px}
-#calendarTab .panel:first-child>.flex>div:first-child{min-width:0;flex:1 1 240px}
-.month{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.month-nav{display:grid;grid-template-columns:42px minmax(90px,1fr) 42px;gap:6px;align-items:center;flex:0 1 230px;min-width:0}
-.month-nav button{width:100%;min-width:0!important;min-height:42px;padding:8px 4px!important}
-.pay-month-nav{display:grid;grid-template-columns:42px minmax(115px,1fr) 42px;gap:7px;align-items:center;width:min(300px,100%);min-width:0}
-.pay-month-nav button{width:42px;height:42px;min-width:0!important;flex:none!important;padding:0!important;font-size:22px;line-height:1}
-#payMonth{display:block;min-width:0;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(14px,3.8vw,18px);font-weight:850;font-variant-numeric:tabular-nums}
-#payrollTab .panel>.flex{gap:12px;align-items:center}
-#payrollTab .panel>.flex>.title{min-width:0}
-/* Sunday is blue; public/company holidays are red and take priority */
-.day.sun{background:#eef5ff!important;border-color:#c8daf8!important}
-.day.sun .num{color:#245eb5!important}
-.day.sun .day-code{color:#245eb5!important}
-.day.ph{background:#fff0ef!important;border-color:#efc4c0!important}
-.day.ph .num,.day.ph .day-code{color:#b42318!important}
-.day.ph .day-ot{color:#a32c24!important}
-.day.sun.selected{outline-color:#3975d4!important;border-color:#3975d4!important}
-.day.ph.selected{outline-color:#c33d32!important;border-color:#c33d32!important}
-.calendar-color-legend{display:flex;flex-wrap:wrap;gap:8px 15px;align-items:center;margin-top:11px;padding:10px 2px 0;border-top:1px solid var(--line);font-size:11px;color:var(--mut)}
-.calendar-color-legend span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
-.legend-swatch{display:inline-block;width:13px;height:13px;border:1px solid var(--line);border-radius:4px;background:#fff}
-.legend-swatch.sunday{background:#eef5ff;border-color:#c8daf8}
-.legend-swatch.holiday{background:#fff0ef;border-color:#efc4c0}
-@media(max-width:600px){
- #calendarTab .panel:first-child>.flex{display:flex;flex-direction:column;align-items:stretch;gap:8px}
- #calendarTab .panel:first-child>.flex>div:first-child{width:100%;flex:0 0 auto}
- #calendarTab .panel:first-child .muted{max-width:none}
- .month-nav{width:100%;flex:0 0 auto;grid-template-columns:42px minmax(0,1fr) 42px}
- #payrollTab .panel>.flex{display:flex;flex-direction:column;align-items:stretch}
- #payrollTab .panel>.flex>.title{margin-bottom:0}
- .pay-month-nav{width:100%;grid-template-columns:42px minmax(0,1fr) 42px}
- #payMonth{font-size:16px}
- .calendar-color-legend{gap:7px 12px;font-size:10px}
-}
-@media(max-width:360px){
- .month-nav{grid-template-columns:38px minmax(0,1fr) 38px;gap:5px}
- .month-nav button{min-height:38px}
- .pay-month-nav{grid-template-columns:38px minmax(0,1fr) 38px;gap:5px}
- .pay-month-nav button{width:38px;height:38px}
- .calendar{gap:2px}
- .day{padding:4px 2px!important;min-height:54px!important}
- .day .num{font-size:12px!important}
- .day-code{font-size:14px!important}
-}
+		/* v18 responsive fixes + Android-style calendar day colors */
+		#calendarTab .panel:first-child>.flex {
+			align-items: flex-start;
+			gap: 12px
+		}
 
-</style></head><body><header><div><h1>📅 Lịch Chấm Công</h1><small>Android logic 1.0.0.6 • Gọn nhẹ • Offline</small></div><div class="row" style="flex:0 0 auto"><button class="secondary" id="backup" title="Xuất dữ liệu">⬇️ <span class="tablabel">Backup</span></button><button class="secondary" id="restore" title="Nhập dữ liệu">⬆️ <span class="tablabel">Khôi phục</span></button><input type="file" id="file" accept=".json,application/json" hidden></div></header>
-<main><div class="tabs"><button class="active" data-tab="calendar" title="Lịch chấm công"><span class="tabicon">📅</span><span class="tablabel">Chấm công</span></button><button data-tab="payroll" title="Tính lương"><span class="tabicon">💰</span><span class="tablabel">Tính lương</span></button><button data-tab="settings" title="Cài đặt lương"><span class="tabicon">⚙️</span><span class="tablabel">Cài đặt</span></button><button data-tab="monthinputs" title="Điều chỉnh tháng"><span class="tabicon">🧾</span><span class="tablabel">Phát sinh</span></button></div>
-<section id="calendarTab"><div class="panel"><div class="flex"><div><div class="month" id="monthTitle"></div><div class="muted">Ngày hiện rõ trạng thái, giờ vào/ra, OT và giờ đêm. Nhấn vào ngày để chỉnh sửa.</div></div><div class="month-nav"><button class="secondary" id="prev" aria-label="Tháng trước">‹</button><button class="secondary" id="thisMonth">Tháng này</button><button class="secondary" id="next" aria-label="Tháng sau">›</button></div></div>
-<div class="quick-board" id="quickBoard">
- <div class="quick-board-head"><div><strong>Chấm nhanh</strong><small>Chọn mã rồi chạm ngày để chấm trực tiếp; chạm lần nữa tắt chế độ.</small></div><button type="button" id="quickToggle" class="secondary quick-toggle" aria-pressed="false">OFF</button></div>
- <div class="quick-board-controls">
-  <label class="quick-code-label">Ký hiệu chấm <select id="quickCode"><option value="WORK">Đi làm · tự nhận diện ca</option><option value="SO">SO · Nghỉ tuần</option><option value="AL">AL · Phép năm</option><option value="PH">PH · Lễ/Tết</option><option value="NB">NB · Nghỉ bù</option><option value="WD">WD · Ngày thường</option></select></label>
-  <div class="quick-times">
-   <div class="quick-time-head"><div><strong>Giờ chấm công</strong><small>Ca D/E/N tự nhận diện từ giờ vào – ra</small></div><button type="button" id="quickSwapTimes" class="secondary quick-swap-btn" title="Đổi giờ vào và giờ ra">⇄ Đảo giờ</button></div>
-   <div class="quick-time-grid quick-time-grid-simple">
-    <label>Giờ vào <input type="time" id="quickIn" value="06:00"></label>
-    <label>Giờ ra <input type="time" id="quickOut" value="18:00"></label>
-   </div>
-   <div class="quick-auto-shift" id="quickAutoShift">Tự nhận diện: D · Ca ngày</div>
-   <button type="button" id="quickSaveTimes" class="secondary quick-save-times">Lưu giờ chấm công mặc định</button>
-  </div>
-  <div class="quick-range"><label>Từ ngày <input type="date" id="quickFrom"></label><label>Đến ngày <input type="date" id="quickTo"></label></div>
-  <label class="quick-check"><input type="checkbox" id="quickSkip" checked> Bỏ qua ngày đã chấm</label>
-  <label class="quick-check"><input type="checkbox" id="quickNoSunday" checked> Bỏ Chủ nhật</label>
-  <button type="button" id="quickApply" class="primary">Áp dụng khoảng ngày</button>
- </div>
- <div class="quick-hint" id="quickHint">Chế độ OFF: chạm ngày sẽ mở popup chỉnh sửa đầy đủ.</div>
-</div>
-<div class="stats" id="stats"></div><div class="calendar" id="calendar"></div><div class="calendar-color-legend" aria-label="Chú giải màu lịch"><span><i class="legend-swatch regular"></i>Ngày thường</span><span><i class="legend-swatch sunday"></i>Chủ nhật</span><span><i class="legend-swatch holiday"></i>Ngày lễ</span></div></div>
-<div id="dayModal" role="dialog" aria-modal="true" aria-label="Nhập chấm công ngày"><div class="panel"><div class="flex modalbar"><h2 class="title" id="detailTitle">Chi tiết ngày</h2><div class="row" style="flex:0 0 auto"><button class="secondary" id="copy" title="Sao chép ngày trước">📋</button><button class="red" id="clear" title="Xóa dữ liệu ngày">🗑️</button><button class="secondary" id="closeDay" title="Đóng">✕</button></div></div>
-<div class="detailgrid"><div><div class="row"><div class="field"><label>Trạng thái</label><select id="status"><option value="WORK">Đi làm</option><option value="OFF">Nghỉ</option><option value="UNSET">Chưa ghi</option></select></div><div class="field"><label>Loại ngày / payroll marker</label><select id="policy"><option value="AUTO">Tự động theo lịch</option><option value="WD">WD • Ngày làm thường</option><option value="NB">NB • Nghỉ bù/nghỉ công ty</option><option value="PH">PH • Lễ/Tết</option></select></div></div>
-<div class="row"><div class="field"><label>Loại nghỉ</label><select id="leave"></select></div><div class="field"><label>Ca</label><select id="shift"><option value="D">D • Ca ngày</option><option value="E">E • Ca chiều</option><option value="N">N • Ca đêm</option></select></div></div>
-<div class="row"><div class="field"><label>Giờ vào</label><input id="in" type="time" value="08:00"></div><div class="field"><label>Giờ ra</label><input id="out" type="time" value="17:00"></div></div>
-<details class="advanced-day"><summary>Điều chỉnh nâng cao · OT, giờ đêm, cử cơm</summary>
-<div class="row"><div class="field"><label>Khung chuẩn bắt đầu</label><input id="regularStart" type="time" value="08:00"></div><div class="field"><label>Khung chuẩn kết thúc</label><input id="regularEnd" type="time" value="17:00"></div></div>
-<div class="row"><div class="field"><label>Tự tính OT</label><select id="autoOT"><option value="true">Bật</option><option value="false">Tắt • nhập tay</option></select></div><div class="field"><label>OT thường nhập tay (h)</label><input id="ot" type="number" min="0" step=".25"></div></div>
-<div class="row"><div class="field"><label>Giờ OT đêm nhập tay (h)</label><input id="nightOT" type="number" min="0" step=".25"></div><div class="field"><label>OT ban ngày trước OT đêm</label><select id="dayOTBefore"><option value="false">Không</option><option value="true">Có</option></select></div></div>
-<div class="row"><div class="field"><label>Giờ đêm override (h, để trống = tự tính)</label><input id="nightHours" type="number" min="0" step=".25" placeholder="Tự tính theo 22:00–06:00"></div><div class="field"><label>Cử cơm override (để trống = tự tính)</label><input id="mealOverride" type="number" min="0" step=".5" placeholder="Tự tính"></div></div>
-<div class="field"><label>Ghi chú</label><textarea id="note"></textarea></div></details></div>
-<div><div class="notice">PH xét theo ngày dương thực tế từng phút; CN/NB theo ngày bắt đầu ca. App không tự đoán ngày nghỉ bù. Đánh dấu đúng ngày NB nếu công ty nghỉ bù.</div><div class="field"><label>Giờ chuẩn/ngày (mặc định từ cài đặt)</label><input id="hoursPreview" disabled></div><div class="field"><label>Loại ngày tự động</label><input id="policyPreview" disabled></div><button id="saveDay">✓ Lưu ngày công</button></div></div></div></div></section>
-<section id="payrollTab" class="hide"><div class="panel"><div class="flex"><h2 class="title">Bảng tính lương</h2><div class="pay-month-nav"><button class="secondary" id="payPrev" aria-label="Tháng trước">‹</button><b id="payMonth"></b><button class="secondary" id="payNext" aria-label="Tháng sau">›</button></div></div><div id="payResult"></div></div></section>
-<section id="settingsTab" class="hide"><div class="panel"><h2 class="title">Cài đặt lương • theo SalarySettingsRepository</h2><div class="row"><div class="field"><label>Tháng bắt đầu áp dụng mốc lương</label><input type="month" id="effective"></div><div class="field"><label>Đánh giá mặc định</label><select id="performance"><option value="NONE">Không</option><option value="AVERAGE">Trung bình</option><option value="GOOD">Khá</option><option value="EXCELLENT">Giỏi</option></select></div></div>
-<div class="section">Cấu hình ca làm (SettingsRepository)</div><div class="row"><div class="field"><label>Chế độ ca</label><select id="shiftMode"><option value="TWO_12H">2 ca • 12 giờ (D 06–18, N 18–06)</option><option value="THREE_8H">3 ca • 8 giờ</option></select></div><div class="field"><label>Ca mặc định</label><select id="defaultShift"><option value="D">D • Ca ngày</option><option value="E">E • Ca chiều</option><option value="N">N • Ca đêm</option></select></div></div><div class="settings" id="sShifts"></div><div class="section">Ngày nghỉ hằng tuần (SettingsRepository)</div><div class="settings" id="weeklyOffSettings"></div><div class="section">Lương & nền BH / nền OT</div><div class="settings" id="sBasis"></div><div class="section">Phụ cấp & tiền cơm</div><div class="settings" id="sAllow"></div><div class="section">Hệ số tăng ca / ca đêm</div><div class="settings" id="sOT"></div><div class="section">Bảo hiểm người lao động / giảm trừ thuế</div><div class="settings" id="sEmp"></div><div class="section">Bảo hiểm phía công ty</div><div class="settings" id="sEr"></div><div class="section">Phép năm / nghỉ tuần</div><div class="settings" id="sLeave"></div><div class="row" style="margin-top:14px"><button id="saveSettings">Lưu cài đặt</button><button class="secondary" id="history">Lịch sử mức lương</button></div></div></section>
-<section id="monthinputsTab" class="hide"><div class="panel"><h2 class="title">Điều chỉnh / phát sinh tháng</h2><div class="field"><label>Tháng</label><input type="month" id="adjMonth"></div><div class="section">Dữ liệu đầu vào theo SalaryAdjustments</div><div class="settings" id="adjFields"></div><div class="section">Các dòng khoản lương tùy chỉnh</div><div id="items"></div><div class="row"><button id="addItem">+ Thêm khoản</button><button id="saveAdj">Lưu điều chỉnh tháng</button></div></div></section>
-</main>
-<div id="timePicker" class="time-overlay" aria-hidden="true"><div class="time-dialog" role="dialog" aria-modal="true" aria-labelledby="timePickerTitle"><div class="time-head"><div><div class="time-kicker">CHỌN THỜI GIAN</div><h3 id="timePickerTitle">Giờ vào</h3></div><button type="button" class="time-close" id="timeCancel" aria-label="Đóng">×</button></div><div class="time-preview" id="timePreview">08:00</div><div class="time-selects"><label>Giờ<select id="pickHour" aria-label="Chọn giờ"></select></label><span class="time-colon">:</span><label>Phút<select id="pickMinute" aria-label="Chọn phút"></select></label></div><div class="time-quick"><button type="button" data-time="06:00">06:00</button><button type="button" data-time="08:00">08:00</button><button type="button" data-time="12:00">12:00</button><button type="button" data-time="18:00">18:00</button><button type="button" data-time="22:00">22:00</button></div><div class="time-actions"><button type="button" class="secondary" id="timeCancel2">Hủy</button><button type="button" id="timeConfirm">Chọn giờ</button></div></div></div>
-<script>
+		#calendarTab .panel:first-child>.flex>div:first-child {
+			min-width: 0;
+			flex: 1 1 240px
+		}
+
+		.month {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis
+		}
+
+		.month-nav {
+			display: grid;
+			grid-template-columns: 42px minmax(90px, 1fr) 42px;
+			gap: 6px;
+			align-items: center;
+			flex: 0 1 230px;
+			min-width: 0
+		}
+
+		.month-nav button {
+			width: 100%;
+			min-width: 0 !important;
+			min-height: 42px;
+			padding: 8px 4px !important
+		}
+
+		.pay-month-nav {
+			display: grid;
+			grid-template-columns: 42px minmax(115px, 1fr) 42px;
+			gap: 7px;
+			align-items: center;
+			width: min(300px, 100%);
+			min-width: 0
+		}
+
+		.pay-month-nav button {
+			width: 42px;
+			height: 42px;
+			min-width: 0 !important;
+			flex: none !important;
+			padding: 0 !important;
+			font-size: 22px;
+			line-height: 1
+		}
+
+		#payMonth {
+			display: block;
+			min-width: 0;
+			text-align: center;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			font-size: clamp(14px, 3.8vw, 18px);
+			font-weight: 850;
+			font-variant-numeric: tabular-nums
+		}
+
+		#payrollTab .panel>.flex {
+			gap: 12px;
+			align-items: center
+		}
+
+		#payrollTab .panel>.flex>.title {
+			min-width: 0
+		}
+
+		/* Sunday is blue; public/company holidays are red and take priority */
+		.day.sun {
+			background: #eef5ff !important;
+			border-color: #c8daf8 !important
+		}
+
+		.day.sun .num {
+			color: #245eb5 !important
+		}
+
+		.day.sun .day-code {
+			color: #245eb5 !important
+		}
+
+		.day.ph {
+			background: #fff0ef !important;
+			border-color: #efc4c0 !important
+		}
+
+		.day.ph .num,
+		.day.ph .day-code {
+			color: #b42318 !important
+		}
+
+		.day.ph .day-ot {
+			color: #a32c24 !important
+		}
+
+		.day.sun.selected {
+			outline-color: #3975d4 !important;
+			border-color: #3975d4 !important
+		}
+
+		.day.ph.selected {
+			outline-color: #c33d32 !important;
+			border-color: #c33d32 !important
+		}
+
+		.calendar-color-legend {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 15px;
+			align-items: center;
+			margin-top: 11px;
+			padding: 10px 2px 0;
+			border-top: 1px solid var(--line);
+			font-size: 11px;
+			color: var(--mut)
+		}
+
+		.calendar-color-legend span {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			white-space: nowrap
+		}
+
+		.legend-swatch {
+			display: inline-block;
+			width: 13px;
+			height: 13px;
+			border: 1px solid var(--line);
+			border-radius: 4px;
+			background: #fff
+		}
+
+		.legend-swatch.sunday {
+			background: #eef5ff;
+			border-color: #c8daf8
+		}
+
+		.legend-swatch.holiday {
+			background: #fff0ef;
+			border-color: #efc4c0
+		}
+
+		@media(max-width:600px) {
+			#calendarTab .panel:first-child>.flex {
+				display: flex;
+				flex-direction: column;
+				align-items: stretch;
+				gap: 8px
+			}
+
+			#calendarTab .panel:first-child>.flex>div:first-child {
+				width: 100%;
+				flex: 0 0 auto
+			}
+
+			#calendarTab .panel:first-child .muted {
+				max-width: none
+			}
+
+			.month-nav {
+				width: 100%;
+				flex: 0 0 auto;
+				grid-template-columns: 42px minmax(0, 1fr) 42px
+			}
+
+			#payrollTab .panel>.flex {
+				display: flex;
+				flex-direction: column;
+				align-items: stretch
+			}
+
+			#payrollTab .panel>.flex>.title {
+				margin-bottom: 0
+			}
+
+			.pay-month-nav {
+				width: 100%;
+				grid-template-columns: 42px minmax(0, 1fr) 42px
+			}
+
+			#payMonth {
+				font-size: 16px
+			}
+
+			.calendar-color-legend {
+				gap: 7px 12px;
+				font-size: 10px
+			}
+		}
+
+		@media(max-width:360px) {
+			.month-nav {
+				grid-template-columns: 38px minmax(0, 1fr) 38px;
+				gap: 5px
+			}
+
+			.month-nav button {
+				min-height: 38px
+			}
+
+			.pay-month-nav {
+				grid-template-columns: 38px minmax(0, 1fr) 38px;
+				gap: 5px
+			}
+
+			.pay-month-nav button {
+				width: 38px;
+				height: 38px
+			}
+
+			.calendar {
+				gap: 2px
+			}
+
+			.day {
+				padding: 4px 2px !important;
+				min-height: 54px !important
+			}
+
+			.day .num {
+				font-size: 12px !important
+			}
+
+			.day-code {
+				font-size: 14px !important
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<div>
+			<h1>📅 Lịch Chấm Công</h1><small>Android logic 1.0.0.6 • Gọn nhẹ • Offline</small>
+		</div>
+		<div class="row" style="flex:0 0 auto"><button class="secondary" id="backup" title="Xuất dữ liệu">⬇️ <span
+					class="tablabel">Backup</span></button><button class="secondary" id="restore"
+				title="Nhập dữ liệu">⬆️ <span class="tablabel">Khôi phục</span></button><input type="file" id="file"
+				accept=".json,application/json" hidden></div>
+	</header>
+	<main>
+		<div class="tabs"><button class="active" data-tab="calendar" title="Lịch chấm công"><span
+					class="tabicon">📅</span><span class="tablabel">Chấm công</span></button><button data-tab="payroll"
+				title="Tính lương"><span class="tabicon">💰</span><span class="tablabel">Tính
+					lương</span></button><button data-tab="settings" title="Cài đặt lương"><span
+					class="tabicon">⚙️</span><span class="tablabel">Cài đặt</span></button><button
+				data-tab="monthinputs" title="Điều chỉnh tháng"><span class="tabicon">🧾</span><span
+					class="tablabel">Phát sinh</span></button></div>
+		<section id="calendarTab">
+			<div class="panel">
+				<div class="flex">
+					<div>
+						<div class="month" id="monthTitle"></div>
+						<div class="muted">Ngày hiện rõ trạng thái, giờ vào/ra, OT và giờ đêm. Nhấn vào ngày để chỉnh
+							sửa.</div>
+					</div>
+					<div class="month-nav"><button class="secondary" id="prev"
+							aria-label="Tháng trước">‹</button><button class="secondary" id="thisMonth">Tháng
+							này</button><button class="secondary" id="next" aria-label="Tháng sau">›</button></div>
+				</div>
+				<div class="quick-board" id="quickBoard">
+					<div class="quick-board-head">
+						<div><strong>Chấm nhanh</strong><small>Chọn mã rồi chạm ngày để chấm trực tiếp; chạm lần nữa tắt
+								chế độ.</small></div><button type="button" id="quickToggle"
+							class="secondary quick-toggle" aria-pressed="false">OFF</button>
+					</div>
+					<div class="quick-board-controls">
+						<label class="quick-code-label">Ký hiệu chấm <select id="quickCode">
+								<option value="WORK">Đi làm · tự nhận diện ca</option>
+								<option value="SO">SO · Nghỉ tuần</option>
+								<option value="AL">AL · Phép năm</option>
+								<option value="PH">PH · Lễ/Tết</option>
+								<option value="NB">NB · Nghỉ bù</option>
+								<option value="WD">WD · Ngày thường</option>
+							</select></label>
+						<div class="quick-times">
+							<div class="quick-time-head">
+								<div><strong>Giờ chấm công</strong><small>Ca D/E/N tự nhận diện từ giờ vào – ra</small>
+								</div><button type="button" id="quickSwapTimes" class="secondary quick-swap-btn"
+									title="Đổi giờ vào và giờ ra">⇄ Đảo giờ</button>
+							</div>
+							<div class="quick-time-grid quick-time-grid-simple">
+								<label>Giờ vào <input type="time" id="quickIn" value="06:00"></label>
+								<label>Giờ ra <input type="time" id="quickOut" value="18:00"></label>
+							</div>
+							<div class="quick-auto-shift" id="quickAutoShift">Tự nhận diện: D · Ca ngày</div>
+							<button type="button" id="quickSaveTimes" class="secondary quick-save-times">Lưu giờ chấm
+								công mặc định</button>
+						</div>
+						<div class="quick-range"><label>Từ ngày <input type="date" id="quickFrom"></label><label>Đến
+								ngày <input type="date" id="quickTo"></label></div>
+						<label class="quick-check"><input type="checkbox" id="quickSkip" checked> Bỏ qua ngày đã
+							chấm</label>
+						<label class="quick-check"><input type="checkbox" id="quickNoSunday" checked> Bỏ Chủ
+							nhật</label>
+						<button type="button" id="quickApply" class="primary">Áp dụng khoảng ngày</button>
+					</div>
+					<div class="quick-hint" id="quickHint">Chế độ OFF: chạm ngày sẽ mở popup chỉnh sửa đầy đủ.</div>
+				</div>
+				<div class="stats" id="stats"></div>
+				<div class="calendar" id="calendar"></div>
+				<div class="calendar-color-legend" aria-label="Chú giải màu lịch"><span><i
+							class="legend-swatch regular"></i>Ngày thường</span><span><i
+							class="legend-swatch sunday"></i>Chủ nhật</span><span><i
+							class="legend-swatch holiday"></i>Ngày lễ</span></div>
+			</div>
+			<div id="dayModal" role="dialog" aria-modal="true" aria-label="Nhập chấm công ngày">
+				<div class="panel">
+					<div class="flex modalbar">
+						<h2 class="title" id="detailTitle">Chi tiết ngày</h2>
+						<div class="row" style="flex:0 0 auto"><button class="secondary" id="copy"
+								title="Sao chép ngày trước">📋</button><button class="red" id="clear"
+								title="Xóa dữ liệu ngày">🗑️</button><button class="secondary" id="closeDay"
+								title="Đóng">✕</button></div>
+					</div>
+					<div class="detailgrid">
+						<div>
+							<div class="row">
+								<div class="field"><label>Trạng thái</label><select id="status">
+										<option value="WORK">Đi làm</option>
+										<option value="OFF">Nghỉ</option>
+										<option value="UNSET">Chưa ghi</option>
+									</select></div>
+								<div class="field"><label>Loại ngày / payroll marker</label><select id="policy">
+										<option value="AUTO">Tự động theo lịch</option>
+										<option value="WD">WD • Ngày làm thường</option>
+										<option value="NB">NB • Nghỉ bù/nghỉ công ty</option>
+										<option value="PH">PH • Lễ/Tết</option>
+									</select></div>
+							</div>
+							<div class="row">
+								<div class="field"><label>Loại nghỉ</label><select id="leave"></select></div>
+								<div class="field"><label>Ca</label><select id="shift">
+										<option value="D">D • Ca ngày</option>
+										<option value="E">E • Ca chiều</option>
+										<option value="N">N • Ca đêm</option>
+									</select></div>
+							</div>
+							<div class="row">
+								<div class="field"><label>Giờ vào</label><input id="in" type="time" value="08:00"></div>
+								<div class="field"><label>Giờ ra</label><input id="out" type="time" value="17:00"></div>
+							</div>
+							<details class="advanced-day">
+								<summary>Điều chỉnh nâng cao · OT, giờ đêm, cử cơm</summary>
+								<div class="row">
+									<div class="field"><label>Khung chuẩn bắt đầu</label><input id="regularStart"
+											type="time" value="08:00"></div>
+									<div class="field"><label>Khung chuẩn kết thúc</label><input id="regularEnd"
+											type="time" value="17:00"></div>
+								</div>
+								<div class="row">
+									<div class="field"><label>Tự tính OT</label><select id="autoOT">
+											<option value="true">Bật</option>
+											<option value="false">Tắt • nhập tay</option>
+										</select></div>
+									<div class="field"><label>OT thường nhập tay (h)</label><input id="ot" type="number"
+											min="0" step=".25"></div>
+								</div>
+								<div class="row">
+									<div class="field"><label>Giờ OT đêm nhập tay (h)</label><input id="nightOT"
+											type="number" min="0" step=".25"></div>
+									<div class="field"><label>OT ban ngày trước OT đêm</label><select id="dayOTBefore">
+											<option value="false">Không</option>
+											<option value="true">Có</option>
+										</select></div>
+								</div>
+								<div class="row">
+									<div class="field"><label>Giờ đêm override (h, để trống = tự tính)</label><input
+											id="nightHours" type="number" min="0" step=".25"
+											placeholder="Tự tính theo 22:00–06:00"></div>
+									<div class="field"><label>Cử cơm override (để trống = tự tính)</label><input
+											id="mealOverride" type="number" min="0" step=".5" placeholder="Tự tính">
+									</div>
+								</div>
+								<div class="field"><label>Ghi chú</label><textarea id="note"></textarea></div>
+							</details>
+						</div>
+						<div>
+							<div class="notice">PH xét theo ngày dương thực tế từng phút; CN/NB theo ngày bắt đầu ca.
+								App không tự đoán ngày nghỉ bù. Đánh dấu đúng ngày NB nếu công ty nghỉ bù.</div>
+							<div class="field"><label>Giờ chuẩn/ngày (mặc định từ cài đặt)</label><input
+									id="hoursPreview" disabled></div>
+							<div class="field"><label>Loại ngày tự động</label><input id="policyPreview" disabled></div>
+							<button id="saveDay">✓ Lưu ngày công</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section id="payrollTab" class="hide">
+			<div class="panel">
+				<div class="flex">
+					<h2 class="title">Bảng tính lương</h2>
+					<div class="pay-month-nav"><button class="secondary" id="payPrev"
+							aria-label="Tháng trước">‹</button><b id="payMonth"></b><button class="secondary"
+							id="payNext" aria-label="Tháng sau">›</button></div>
+				</div>
+				<div id="payResult"></div>
+			</div>
+		</section>
+		<section id="settingsTab" class="hide">
+			<div class="panel">
+				<h2 class="title">Cài đặt lương • theo SalarySettingsRepository</h2>
+				<div class="row">
+					<div class="field"><label>Tháng bắt đầu áp dụng mốc lương</label><input type="month" id="effective">
+					</div>
+					<div class="field"><label>Đánh giá mặc định</label><select id="performance">
+							<option value="NONE">Không</option>
+							<option value="AVERAGE">Trung bình</option>
+							<option value="GOOD">Khá</option>
+							<option value="EXCELLENT">Giỏi</option>
+						</select></div>
+				</div>
+				<div class="section">Cấu hình ca làm (SettingsRepository)</div>
+				<div class="row">
+					<div class="field"><label>Chế độ ca</label><select id="shiftMode">
+							<option value="TWO_12H">2 ca • 12 giờ (D 06–18, N 18–06)</option>
+							<option value="THREE_8H">3 ca • 8 giờ</option>
+						</select></div>
+					<div class="field"><label>Ca mặc định</label><select id="defaultShift">
+							<option value="D">D • Ca ngày</option>
+							<option value="E">E • Ca chiều</option>
+							<option value="N">N • Ca đêm</option>
+						</select></div>
+				</div>
+				<div class="settings" id="sShifts"></div>
+				<div class="section">Ngày nghỉ hằng tuần (SettingsRepository)</div>
+				<div class="settings" id="weeklyOffSettings"></div>
+				<div class="section">Lương & nền BH / nền OT</div>
+				<div class="settings" id="sBasis"></div>
+				<div class="section">Phụ cấp & tiền cơm</div>
+				<div class="settings" id="sAllow"></div>
+				<div class="section">Hệ số tăng ca / ca đêm</div>
+				<div class="settings" id="sOT"></div>
+				<div class="section">Bảo hiểm người lao động / giảm trừ thuế</div>
+				<div class="settings" id="sEmp"></div>
+				<div class="section">Bảo hiểm phía công ty</div>
+				<div class="settings" id="sEr"></div>
+				<div class="section">Phép năm / nghỉ tuần</div>
+				<div class="settings" id="sLeave"></div>
+				<div class="row" style="margin-top:14px"><button id="saveSettings">Lưu cài đặt</button><button
+						class="secondary" id="history">Lịch sử mức lương</button></div>
+			</div>
+		</section>
+		<section id="monthinputsTab" class="hide">
+			<div class="panel">
+				<h2 class="title">Điều chỉnh / phát sinh tháng</h2>
+				<div class="field"><label>Tháng</label><input type="month" id="adjMonth"></div>
+				<div class="section">Dữ liệu đầu vào theo SalaryAdjustments</div>
+				<div class="settings" id="adjFields"></div>
+				<div class="section">Các dòng khoản lương tùy chỉnh</div>
+				<div id="items"></div>
+				<div class="row"><button id="addItem">+ Thêm khoản</button><button id="saveAdj">Lưu điều chỉnh
+						tháng</button></div>
+			</div>
+		</section>
+	</main>
+	<div id="timePicker" class="time-overlay" aria-hidden="true">
+		<div class="time-dialog" role="dialog" aria-modal="true" aria-labelledby="timePickerTitle">
+			<div class="time-head">
+				<div>
+					<div class="time-kicker">CHỌN THỜI GIAN</div>
+					<h3 id="timePickerTitle">Giờ vào</h3>
+				</div><button type="button" class="time-close" id="timeCancel" aria-label="Đóng">×</button>
+			</div>
+			<div class="time-preview" id="timePreview">08:00</div>
+			<div class="time-selects"><label>Giờ<select id="pickHour" aria-label="Chọn giờ"></select></label><span
+					class="time-colon">:</span><label>Phút<select id="pickMinute"
+						aria-label="Chọn phút"></select></label></div>
+			<div class="time-quick"><button type="button" data-time="06:00">06:00</button><button type="button"
+					data-time="08:00">08:00</button><button type="button" data-time="12:00">12:00</button><button
+					type="button" data-time="18:00">18:00</button><button type="button" data-time="22:00">22:00</button>
+			</div>
+			<div class="time-actions"><button type="button" class="secondary" id="timeCancel2">Hủy</button><button
+					type="button" id="timeConfirm">Chọn giờ</button></div>
+		</div>
+	</div>
+	<script>
 const $=id=>document.getElementById(id), fmt=n=>Math.round(Number(n)||0).toLocaleString('vi-VN')+' ₫', val=id=>Number($(id).value)||0, today=new Date();
 const STORAGE='chamcong8h_rebuild_10006';
 let view=new Date(today.getFullYear(),today.getMonth(),1),payView=new Date(view),selected=new Date(today.getFullYear(),today.getMonth(),today.getDate());
@@ -725,4 +3268,7 @@ function applyQuickRange(){
 }
 function bind(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['calendar','payroll','settings','monthinputs'].forEach(t=>$(t+'Tab').classList.toggle('hide',t!==b.dataset.tab));if(b.dataset.tab==='payroll')renderSalary();if(b.dataset.tab==='settings'){renderSettings();setupSettingsAccordion();}if(b.dataset.tab==='monthinputs')renderAdj()});$('prev').onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);renderCalendar();renderStats()};$('next').onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);renderCalendar();renderStats()};$('thisMonth').onclick=()=>{view=new Date(today.getFullYear(),today.getMonth(),1);renderCalendar();renderStats()};$('payPrev').onclick=()=>{payView=new Date(payView.getFullYear(),payView.getMonth()-1,1);$('adjMonth').value=monthKey(payView);renderSalary()};$('payNext').onclick=()=>{payView=new Date(payView.getFullYear(),payView.getMonth()+1,1);$('adjMonth').value=monthKey(payView);renderSalary()};$('saveDay').onclick=saveDay;$('closeDay').onclick=closeDayModal;$('dayModal').onclick=e=>{if(e.target===$('dayModal'))closeDayModal()};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDayModal()});$('shift').onchange=()=>{let w=regularWindowForShift({shiftCode:$('shift').value});$('regularStart').value=w[0];$('regularEnd').value=w[1];let code=$('shift').value;$('in').value=code==='N'?cfg.shift3Start:code==='E'?cfg.shift2Start:cfg.shift1Start;$('out').value=code==='N'?cfg.shift3End:code==='E'?cfg.shift2End:cfg.shift1End};$('status').onchange=()=>{$('leave').disabled=$('status').value!=='OFF'};$('clear').onclick=()=>{delete records[dateKey(selected)];delete markers[dateKey(selected)];save();loadDetail()};$('copy').onclick=()=>{let d=new Date(selected),found;for(let i=0;i<35;i++){d.setDate(d.getDate()-1);if(records[dateKey(d)]){found=JSON.parse(JSON.stringify(records[dateKey(d)]));break}}if(found){records[dateKey(selected)]=found;save();loadDetail()}else alert('Không có bản ghi ngày trước')};$('saveSettings').onclick=saveSettings;$('history').onclick=()=>alert(Object.keys(salaryHistory).sort().map(k=>k+' • LCB '+fmt(salaryHistory[k].baseSalary)).join('\\n')||'Chưa có mốc lương');$('adjMonth').onchange=renderAdj;$('addItem').onclick=()=>{let m=$('adjMonth').value||monthKey(payView);(itemsByMonth[m]||(itemsByMonth[m]=[])).push({name:'Khoản mới',kind:'income',amount:0});renderAdj()};$('saveAdj').onclick=saveAdj;$('backup').onclick=()=>{let blob=new Blob([JSON.stringify({schema:10006,records,markers,cfg,monthAdj,itemsByMonth,salaryHistory,manualRules,entryPrefs},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lich-cham-cong-backup.json';a.click();URL.revokeObjectURL(a.href)};$('restore').onclick=()=>$('file').click();$('file').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);records=d.records||{};markers=d.markers||{};cfg={...defaults,...d.cfg};monthAdj=d.monthAdj||{};itemsByMonth=d.itemsByMonth||{};salaryHistory=d.salaryHistory||{};manualRules=d.manualRules||{};entryPrefs=d.entryPrefs||{};save();renderSettings();renderAdj();loadDetail();alert('Đã nhập backup')}catch(err){alert('Backup không hợp lệ')}};r.readAsText(f)}}
 load();$('leave').innerHTML=leaveList.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');$('effective').value=monthKey(today);$('adjMonth').value=monthKey(today);$('performance').value=cfg.defaultPerformanceLevel;initTimePicker();bind();initQuickBoard();renderCalendar();renderStats();loadDetail();renderSalary();renderSettings();setupSettingsAccordion();renderAdj();
-</script></body></html>
+</script>
+</body>
+
+</html>
