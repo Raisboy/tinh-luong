@@ -2532,6 +2532,23 @@
 			line-height: 1
 		}
 
+		#payMonthPicker {
+			width: 100%;
+			min-width: 0;
+			height: 42px;
+			padding: 6px 8px;
+			border: 1px solid var(--line);
+			border-radius: 9px;
+			background: #edf4f0;
+			color: #285746;
+			font: 700 15px system-ui, sans-serif;
+			text-align: center
+		}
+
+		.pay-month-nav {
+			grid-template-columns: 42px minmax(0, 1fr) 42px
+		}
+
 		#payMonth {
 			display: block;
 			min-width: 0;
@@ -2714,13 +2731,39 @@
 				font-size: 14px !important
 			}
 		}
+
+
+		/* v19: responsive direct month selector and creator branding */
+		#payMonthPicker {
+			appearance: auto;
+			max-width: 100%;
+			min-width: 0
+		}
+
+		@media(max-width:420px) {
+			.pay-month-nav {
+				display: grid;
+				grid-template-columns: 38px minmax(0, 1fr) 38px;
+				gap: 6px
+			}
+
+			.pay-month-nav button {
+				min-width: 0;
+				padding: 8px 5px
+			}
+
+			#payMonthPicker {
+				font-size: 14px;
+				padding: 6px 3px
+			}
+		}
 	</style>
 </head>
 
 <body>
 	<header>
 		<div>
-			<h1>📅 Lịch Chấm Công</h1><small>Android logic 1.0.0.6 • Gọn nhẹ • Offline</small>
+			<h1>📅 Lịch Chấm Công</h1><small>Người sáng tạo: RaisDz</small>
 		</div>
 		<div class="row" style="flex:0 0 auto"><button class="secondary" id="backup" title="Xuất dữ liệu">⬇️ <span
 					class="tablabel">Backup</span></button><button class="secondary" id="restore"
@@ -2881,8 +2924,9 @@
 				<div class="flex">
 					<h2 class="title">Bảng tính lương</h2>
 					<div class="pay-month-nav"><button class="secondary" id="payPrev"
-							aria-label="Tháng trước">‹</button><b id="payMonth"></b><button class="secondary"
-							id="payNext" aria-label="Tháng sau">›</button></div>
+							aria-label="Tháng trước">‹</button><input type="month" id="payMonthPicker"
+							aria-label="Chọn tháng tính lương"><button class="secondary" id="payNext"
+							aria-label="Tháng sau">›</button></div>
 				</div>
 				<div id="payResult"></div>
 			</div>
@@ -3169,7 +3213,7 @@ function sourceRevision(m){let hs=Object.keys(salaryHistory).filter(k=>k<=m).sor
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function removeItem(i){let m=$('adjMonth').value,a=itemsByMonth[m]||[];a.splice(i,1);itemsByMonth[m]=a;renderAdj()}
 function saveAdj(){let m=$('adjMonth').value||monthKey(payView),a={...(monthAdj[m]||{})};document.querySelectorAll('[data-adj]').forEach(e=>{let k=e.dataset.adj;if(e.value==='')delete a[k];else a[k]=e.type==='text'?e.value:Number(e.value)});let derivedKeys=['mealServingsOverride','normalOtHoursOverride','sundayOtHoursOverride','holidayOtHoursOverride','normalNightOtHoursOverride','sundayNightOtHoursOverride','holidayNightOtHoursOverride','totalNightHoursOverride'];if(derivedKeys.some(k=>a[k]!=null))a.derivedSourceRevision=sourceRevision(m);else delete a.derivedSourceRevision;monthAdj[m]=a;let arr=itemsByMonth[m]||[];document.querySelectorAll('[data-item]').forEach(e=>{let i=Number(e.dataset.item),p=e.dataset.prop;if(arr[i])arr[i][p]=p==='amount'?Number(e.value)||0:e.value});itemsByMonth[m]=arr;save();renderAdj();renderSalary();alert('Đã lưu điều chỉnh '+m)}
-function renderSalary(){let p=payroll(payView);$('payMonth').textContent=`Tháng ${payView.getMonth()+1}/${payView.getFullYear()}`;let rows=[['Công chuẩn',p.standard,''],['Ngày công hưởng lương',p.paidDays,''],['Số cử cơm',p.meal,''],['Tổng giờ đêm',p.night,''],['Lương ngày công',p.working,'money'],['Phụ cấp nặng nhọc',p.haz,'money'],['Phụ cấp thâm niên',p.sen,'money'],['Chuyên cần',p.att,'money'],['Đi lại/sinh hoạt',p.living,'money'],['Thưởng đánh giá',p.performance,'money'],['Phụ cấp con nhỏ',p.child,'money'],['Phụ cấp khác',p.other,'money'],['Tiền cơm',p.mealPay,'money'],['OT ngày thường',p.normalPay,'money'],['OT CN/SO/NB',p.restPay,'money'],['OT PH/lễ',p.holidayPay,'money'],['Phụ cấp ca đêm',p.nightPay,'money'],['Trợ cấp BHXH ước tính',p.benefit,'money'],['Tổng thu nhập',p.income,'money'],['BHXH NLĐ',p.soc,'money'],['BHYT NLĐ',p.health,'money'],['BHTN NLĐ',p.unemp,'money'],['Đoàn phí',p.union,'money'],['Thuế TNCN',p.pit,'money'],['Tổng khấu trừ',p.ded,'money'],['Bảo hiểm phía công ty (tham khảo)',p.employer,'money'],['THỰC LÃNH',p.net,'money']];$('payResult').innerHTML=`<table>${rows.map((r,i)=>`<tr class="${[16,22,24].includes(i)?'total':''}"><td>${r[0]}</td><td>${r[2]==='money'?fmt(r[1]):Number(r[1]).toFixed(2).replace(/\\.00$/,'')}</td></tr>`).join('')}</table>`}
+function renderSalary(){let p=payroll(payView);$('payMonthPicker').value=monthKey(payView);let rows=[['Công chuẩn',p.standard,''],['Ngày công hưởng lương',p.paidDays,''],['Số cử cơm',p.meal,''],['Tổng giờ đêm',p.night,''],['Lương ngày công',p.working,'money'],['Phụ cấp nặng nhọc',p.haz,'money'],['Phụ cấp thâm niên',p.sen,'money'],['Chuyên cần',p.att,'money'],['Đi lại/sinh hoạt',p.living,'money'],['Thưởng đánh giá',p.performance,'money'],['Phụ cấp con nhỏ',p.child,'money'],['Phụ cấp khác',p.other,'money'],['Tiền cơm',p.mealPay,'money'],['OT ngày thường',p.normalPay,'money'],['OT CN/SO/NB',p.restPay,'money'],['OT PH/lễ',p.holidayPay,'money'],['Phụ cấp ca đêm',p.nightPay,'money'],['Trợ cấp BHXH ước tính',p.benefit,'money'],['Tổng thu nhập',p.income,'money'],['BHXH NLĐ',p.soc,'money'],['BHYT NLĐ',p.health,'money'],['BHTN NLĐ',p.unemp,'money'],['Đoàn phí',p.union,'money'],['Thuế TNCN',p.pit,'money'],['Tổng khấu trừ',p.ded,'money'],['Bảo hiểm phía công ty (tham khảo)',p.employer,'money'],['THỰC LÃNH',p.net,'money']];$('payResult').innerHTML=`<table>${rows.map((r,i)=>`<tr class="${[16,22,24].includes(i)?'total':''}"><td>${r[0]}</td><td>${r[2]==='money'?fmt(r[1]):Number(r[1]).toFixed(2).replace(/\\.00$/,'')}</td></tr>`).join('')}</table>`}
 function openDayModal(){$('dayModal').classList.add('open');document.body.style.overflow='hidden';setTimeout(()=>{$('status').focus({preventScroll:true})},40)}function closeDayModal(){$('dayModal').classList.remove('open');document.body.style.overflow=''}function setupSettingsAccordion(){let icons=['🕒','📆','💵','🎁','⏱️','🛡️','🏢','🌴'];document.querySelectorAll('#settingsTab .section').forEach((h,i)=>{if(h.dataset.ready)return;h.dataset.ready='1';h.classList.add('setting-toggle');h.dataset.icon=icons[i]||'⚙️';let next=h.nextElementSibling;if(next&&next.classList.contains('settings')){next.classList.add('collapsed');h.classList.add('collapsed');h.onclick=()=>{next.classList.toggle('collapsed');h.classList.toggle('collapsed')}}})}
 
 let timeTarget=null;
@@ -3266,7 +3310,8 @@ function applyQuickRange(){
  renderCalendar();renderStats();renderSalary();savePrefsOnly();
  $('quickHint').textContent=`Đã áp dụng ${code} cho ${eligible.length} ngày.`;
 }
-function bind(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['calendar','payroll','settings','monthinputs'].forEach(t=>$(t+'Tab').classList.toggle('hide',t!==b.dataset.tab));if(b.dataset.tab==='payroll')renderSalary();if(b.dataset.tab==='settings'){renderSettings();setupSettingsAccordion();}if(b.dataset.tab==='monthinputs')renderAdj()});$('prev').onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);renderCalendar();renderStats()};$('next').onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);renderCalendar();renderStats()};$('thisMonth').onclick=()=>{view=new Date(today.getFullYear(),today.getMonth(),1);renderCalendar();renderStats()};$('payPrev').onclick=()=>{payView=new Date(payView.getFullYear(),payView.getMonth()-1,1);$('adjMonth').value=monthKey(payView);renderSalary()};$('payNext').onclick=()=>{payView=new Date(payView.getFullYear(),payView.getMonth()+1,1);$('adjMonth').value=monthKey(payView);renderSalary()};$('saveDay').onclick=saveDay;$('closeDay').onclick=closeDayModal;$('dayModal').onclick=e=>{if(e.target===$('dayModal'))closeDayModal()};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDayModal()});$('shift').onchange=()=>{let w=regularWindowForShift({shiftCode:$('shift').value});$('regularStart').value=w[0];$('regularEnd').value=w[1];let code=$('shift').value;$('in').value=code==='N'?cfg.shift3Start:code==='E'?cfg.shift2Start:cfg.shift1Start;$('out').value=code==='N'?cfg.shift3End:code==='E'?cfg.shift2End:cfg.shift1End};$('status').onchange=()=>{$('leave').disabled=$('status').value!=='OFF'};$('clear').onclick=()=>{delete records[dateKey(selected)];delete markers[dateKey(selected)];save();loadDetail()};$('copy').onclick=()=>{let d=new Date(selected),found;for(let i=0;i<35;i++){d.setDate(d.getDate()-1);if(records[dateKey(d)]){found=JSON.parse(JSON.stringify(records[dateKey(d)]));break}}if(found){records[dateKey(selected)]=found;save();loadDetail()}else alert('Không có bản ghi ngày trước')};$('saveSettings').onclick=saveSettings;$('history').onclick=()=>alert(Object.keys(salaryHistory).sort().map(k=>k+' • LCB '+fmt(salaryHistory[k].baseSalary)).join('\\n')||'Chưa có mốc lương');$('adjMonth').onchange=renderAdj;$('addItem').onclick=()=>{let m=$('adjMonth').value||monthKey(payView);(itemsByMonth[m]||(itemsByMonth[m]=[])).push({name:'Khoản mới',kind:'income',amount:0});renderAdj()};$('saveAdj').onclick=saveAdj;$('backup').onclick=()=>{let blob=new Blob([JSON.stringify({schema:10006,records,markers,cfg,monthAdj,itemsByMonth,salaryHistory,manualRules,entryPrefs},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lich-cham-cong-backup.json';a.click();URL.revokeObjectURL(a.href)};$('restore').onclick=()=>$('file').click();$('file').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);records=d.records||{};markers=d.markers||{};cfg={...defaults,...d.cfg};monthAdj=d.monthAdj||{};itemsByMonth=d.itemsByMonth||{};salaryHistory=d.salaryHistory||{};manualRules=d.manualRules||{};entryPrefs=d.entryPrefs||{};save();renderSettings();renderAdj();loadDetail();alert('Đã nhập backup')}catch(err){alert('Backup không hợp lệ')}};r.readAsText(f)}}
+function bind(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['calendar','payroll','settings','monthinputs'].forEach(t=>$(t+'Tab').classList.toggle('hide',t!==b.dataset.tab));if(b.dataset.tab==='payroll')renderSalary();if(b.dataset.tab==='settings'){renderSettings();setupSettingsAccordion();}if(b.dataset.tab==='monthinputs')renderAdj()});function setSelectedMonth(d){view=new Date(d.getFullYear(),d.getMonth(),1);payView=new Date(view);$('adjMonth').value=monthKey(payView);renderCalendar();renderStats();renderSalary();if(!$('adjMonth').value)$('adjMonth').value=monthKey(payView)}
+$('prev').onclick=()=>setSelectedMonth(new Date(view.getFullYear(),view.getMonth()-1,1));$('next').onclick=()=>setSelectedMonth(new Date(view.getFullYear(),view.getMonth()+1,1));$('thisMonth').onclick=()=>setSelectedMonth(new Date(today.getFullYear(),today.getMonth(),1));$('payPrev').onclick=()=>setSelectedMonth(new Date(payView.getFullYear(),payView.getMonth()-1,1));$('payNext').onclick=()=>setSelectedMonth(new Date(payView.getFullYear(),payView.getMonth()+1,1));$('payMonthPicker').onchange=()=>{if($('payMonthPicker').value){let [y,m]=$('payMonthPicker').value.split('-').map(Number);setSelectedMonth(new Date(y,m-1,1))}};$('saveDay').onclick=saveDay;$('closeDay').onclick=closeDayModal;$('dayModal').onclick=e=>{if(e.target===$('dayModal'))closeDayModal()};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDayModal()});$('shift').onchange=()=>{let w=regularWindowForShift({shiftCode:$('shift').value});$('regularStart').value=w[0];$('regularEnd').value=w[1];let code=$('shift').value;$('in').value=code==='N'?cfg.shift3Start:code==='E'?cfg.shift2Start:cfg.shift1Start;$('out').value=code==='N'?cfg.shift3End:code==='E'?cfg.shift2End:cfg.shift1End};$('status').onchange=()=>{$('leave').disabled=$('status').value!=='OFF'};$('clear').onclick=()=>{delete records[dateKey(selected)];delete markers[dateKey(selected)];save();loadDetail()};$('copy').onclick=()=>{let d=new Date(selected),found;for(let i=0;i<35;i++){d.setDate(d.getDate()-1);if(records[dateKey(d)]){found=JSON.parse(JSON.stringify(records[dateKey(d)]));break}}if(found){records[dateKey(selected)]=found;save();loadDetail()}else alert('Không có bản ghi ngày trước')};$('saveSettings').onclick=saveSettings;$('history').onclick=()=>alert(Object.keys(salaryHistory).sort().map(k=>k+' • LCB '+fmt(salaryHistory[k].baseSalary)).join('\\n')||'Chưa có mốc lương');$('adjMonth').onchange=renderAdj;$('addItem').onclick=()=>{let m=$('adjMonth').value||monthKey(payView);(itemsByMonth[m]||(itemsByMonth[m]=[])).push({name:'Khoản mới',kind:'income',amount:0});renderAdj()};$('saveAdj').onclick=saveAdj;$('backup').onclick=()=>{let blob=new Blob([JSON.stringify({schema:10006,records,markers,cfg,monthAdj,itemsByMonth,salaryHistory,manualRules,entryPrefs},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lich-cham-cong-backup.json';a.click();URL.revokeObjectURL(a.href)};$('restore').onclick=()=>$('file').click();$('file').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);records=d.records||{};markers=d.markers||{};cfg={...defaults,...d.cfg};monthAdj=d.monthAdj||{};itemsByMonth=d.itemsByMonth||{};salaryHistory=d.salaryHistory||{};manualRules=d.manualRules||{};entryPrefs=d.entryPrefs||{};save();renderSettings();renderAdj();loadDetail();alert('Đã nhập backup')}catch(err){alert('Backup không hợp lệ')}};r.readAsText(f)}}
 load();$('leave').innerHTML=leaveList.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');$('effective').value=monthKey(today);$('adjMonth').value=monthKey(today);$('performance').value=cfg.defaultPerformanceLevel;initTimePicker();bind();initQuickBoard();renderCalendar();renderStats();loadDetail();renderSalary();renderSettings();setupSettingsAccordion();renderAdj();
 </script>
 </body>
